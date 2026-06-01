@@ -195,33 +195,44 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="text-xl font-serif text-forest tracking-wide">Product Catalogue</h3>
+          <h3 className="text-xl font-serif text-forest font-light">Product Catalogue</h3>
           <p className="text-[10px] text-forest/40 font-sans tracking-widest uppercase mt-0.5">
-            {products.length} products • Images stored in MongoDB
+            {products.length} products · images in MongoDB
           </p>
         </div>
-        <Button onClick={openCreate} variant="secondary" size="sm" className="flex items-center gap-2 font-bold">
-          <Plus className="w-3.5 h-3.5" /> Add Product
-        </Button>
+        <button
+          onClick={openCreate}
+          className="flex items-center gap-2 px-4 py-2.5 bg-gold text-forest text-[11px] font-sans font-bold uppercase tracking-wider min-h-[44px] hover:bg-gold/90 active:scale-[0.97] transition-all cursor-pointer flex-shrink-0"
+        >
+          <Plus className="w-4 h-4" /> Add
+        </button>
       </div>
 
-      {/* Product Form Modal */}
+      {/* Product Form — bottom sheet on mobile, centered modal on desktop */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-10 bg-forest/80 backdrop-blur-sm overflow-y-auto animate-fade-in">
-          <div className="relative w-full max-w-3xl bg-ivory border border-gold/30 shadow-2xl">
-            {/* Form Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gold/15 bg-forest text-ivory">
-              <h4 className="font-serif text-lg tracking-wide">{editingId ? "Edit Product" : "Add New Product"}</h4>
-              <button onClick={() => setShowForm(false)} className="p-1.5 text-ivory/50 hover:text-ivory cursor-pointer">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-50 bg-forest/80 backdrop-blur-sm animate-fade-in">
+          {/* Backdrop tap to close */}
+          <div className="absolute inset-0" onClick={() => setShowForm(false)} />
+          {/* Sheet */}
+          <div className="absolute bottom-0 left-0 right-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-4">
+            <div className="relative w-full sm:max-w-2xl bg-ivory sm:border sm:border-gold/30 shadow-2xl max-h-[92vh] sm:max-h-[90vh] flex flex-col rounded-t-2xl sm:rounded-none">
+              {/* Drag handle — mobile only */}
+              <div className="sm:hidden flex justify-center pt-3 pb-1 flex-shrink-0">
+                <div className="w-10 h-1 bg-forest/20 rounded-full" />
+              </div>
+              {/* Form Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gold/15 bg-forest text-ivory flex-shrink-0">
+                <h4 className="font-serif text-base tracking-wide">{editingId ? "Edit Product" : "Add New Product"}</h4>
+                <button onClick={() => setShowForm(false)} className="p-2 text-ivory/50 hover:text-ivory cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
 
-            <form onSubmit={handleSave} className="p-6 flex flex-col gap-5">
+            <form onSubmit={handleSave} className="p-5 flex flex-col gap-4 overflow-y-auto flex-1">
               {/* Image Upload */}
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-sans font-bold uppercase tracking-widest text-forest/60">
@@ -340,99 +351,138 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-gold/15">
-                <button type="button" onClick={() => setShowForm(false)} className="text-[11px] font-sans font-semibold uppercase tracking-wider text-forest/50 hover:text-forest cursor-pointer transition-colors">
+              {/* Actions — sticky footer */}
+              <div className="flex items-center gap-3 pt-3 border-t border-gold/15 flex-shrink-0">
+                <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-3 text-[11px] font-sans font-bold uppercase tracking-wider text-forest/60 border border-forest/15 hover:bg-forest/5 cursor-pointer transition-colors min-h-[48px]">
                   Cancel
                 </button>
-                <Button type="submit" variant="secondary" size="md" disabled={saving} className="flex items-center gap-2 font-bold">
-                  {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                <button type="submit" disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3 bg-gold text-forest text-[11px] font-sans font-bold uppercase tracking-wider min-h-[48px] hover:bg-gold/90 disabled:opacity-50 cursor-pointer transition-all">
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                   {saving ? "Saving…" : editingId ? "Save Changes" : "Create Product"}
-                </Button>
+                </button>
               </div>
             </form>
+          </div>
           </div>
         </div>
       )}
 
-      {/* Products Table */}
-      <div className="bg-ivory border border-gold/15 overflow-hidden">
-        {loading ? (
-          <div className="p-12 text-center text-forest/40 font-sans text-xs tracking-widest uppercase animate-pulse">
-            Loading products…
+      {/* Products list */}
+      {loading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="bg-ivory border border-gold/10 animate-pulse">
+              <div className="aspect-square bg-forest/10" />
+              <div className="p-3 flex flex-col gap-2">
+                <div className="h-2.5 bg-forest/10 rounded w-3/4" />
+                <div className="h-2 bg-forest/10 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : products.length === 0 ? (
+        <div className="bg-ivory border border-gold/15 p-14 flex flex-col items-center gap-3 text-center">
+          <ImageIcon className="w-8 h-8 text-gold/25" />
+          <p className="text-forest/40 font-sans text-xs tracking-widest uppercase">No products yet</p>
+          <button onClick={openCreate} className="mt-1 px-4 py-2.5 border border-forest/20 text-[11px] font-sans font-bold uppercase tracking-wider text-forest/70 hover:bg-forest/5 cursor-pointer min-h-[44px]">
+            Add First Product
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Mobile: card grid */}
+          <div className="grid grid-cols-2 gap-3 sm:hidden">
+            {products.map((p) => (
+              <div key={p._id} className="bg-ivory border border-gold/15 overflow-hidden flex flex-col">
+                {/* Image */}
+                <div className="aspect-square bg-forest/5 relative overflow-hidden">
+                  {p.image ? (
+                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon className="w-8 h-8 text-forest/15" />
+                    </div>
+                  )}
+                  {/* Live/hidden badge */}
+                  <button onClick={() => handleToggle(p)} className="absolute top-2 right-2 cursor-pointer">
+                    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase border ${
+                      p.active ? "bg-green-500/90 text-white border-green-600" : "bg-red-500/80 text-white border-red-600"
+                    }`}>
+                      {p.active ? "Live" : "Off"}
+                    </span>
+                  </button>
+                </div>
+                <div className="p-3 flex flex-col gap-1.5 flex-1">
+                  <p className="font-serif font-bold text-forest text-xs leading-tight line-clamp-2">{p.name}</p>
+                  <p className="text-[9px] text-forest/45 uppercase tracking-wider">{p.category}</p>
+                  <p className="font-bold text-forest text-sm mt-auto">${p.price?.toFixed(2)}</p>
+                </div>
+                {/* Actions */}
+                <div className="flex border-t border-gold/10">
+                  <button onClick={() => openEdit(p)} className="flex-1 flex items-center justify-center py-2.5 text-forest/50 hover:text-gold hover:bg-gold/5 transition-colors cursor-pointer min-h-[44px]">
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <div className="w-px bg-gold/10" />
+                  <button onClick={() => handleDelete(p._id, p.name)} className="flex-1 flex items-center justify-center py-2.5 text-forest/50 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer min-h-[44px]">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ) : products.length === 0 ? (
-          <div className="p-16 text-center flex flex-col items-center gap-3">
-            <ImageIcon className="w-8 h-8 text-gold/30" />
-            <p className="text-forest/40 font-sans text-xs tracking-widest uppercase">No products yet</p>
-            <Button onClick={openCreate} variant="outline" size="sm">Add your first product</Button>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse font-sans text-xs">
-              <thead>
-                <tr className="border-b border-gold/15 bg-forest/5 text-forest/50 font-bold uppercase tracking-wider text-[10px]">
-                  <th className="py-3 px-4">Product</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4 text-right">Price</th>
-                  <th className="py-3 px-4 text-center">Stock</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gold/5">
-                {products.map((p) => (
-                  <tr key={p._id} className="hover:bg-forest/5 transition-all duration-200">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-forest/10 border border-gold/10 overflow-hidden flex-shrink-0">
-                          {p.image ? (
-                            <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <ImageIcon className="w-4 h-4 text-forest/20" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-serif font-bold text-forest text-sm leading-tight">{p.name}</p>
-                          <p className="text-[10px] text-forest/40 mt-0.5">{p.origin || "—"}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-gold/10 text-gold-dark border border-gold/15">
-                        {p.category}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right font-bold text-forest">${p.price?.toFixed(2)}</td>
-                    <td className="py-3 px-4 text-center text-forest/70">{p.stock ?? "—"}</td>
-                    <td className="py-3 px-4 text-center">
-                      <button onClick={() => handleToggle(p)} className="cursor-pointer" title={p.active ? "Deactivate" : "Activate"}>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${
-                          p.active ? "bg-green-500/10 text-green-700 border-green-500/25" : "bg-red-500/10 text-red-700 border-red-500/25"
-                        }`}>
-                          {p.active ? <><Eye className="w-2.5 h-2.5" /> Live</> : <><EyeOff className="w-2.5 h-2.5" /> Hidden</>}
-                        </span>
-                      </button>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openEdit(p)} className="p-1.5 text-forest/40 hover:text-gold border border-transparent hover:border-gold/30 transition-all cursor-pointer" title="Edit">
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button onClick={() => handleDelete(p._id, p.name)} className="p-1.5 text-forest/40 hover:text-red-600 border border-transparent hover:border-red-500/30 transition-all cursor-pointer" title="Delete">
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block bg-ivory border border-gold/15 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse font-sans text-xs">
+                <thead>
+                  <tr className="border-b border-gold/10 bg-forest/5 text-forest/50 font-bold uppercase tracking-wider text-[10px]">
+                    <th className="py-3 px-4">Product</th>
+                    <th className="py-3 px-4">Category</th>
+                    <th className="py-3 px-4 text-right">Price</th>
+                    <th className="py-3 px-4 text-center">Stock</th>
+                    <th className="py-3 px-4 text-center">Status</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gold/5">
+                  {products.map((p) => (
+                    <tr key={p._id} className="hover:bg-forest/5 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-forest/10 border border-gold/10 overflow-hidden flex-shrink-0">
+                            {p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><ImageIcon className="w-4 h-4 text-forest/20" /></div>}
+                          </div>
+                          <div>
+                            <p className="font-serif font-bold text-forest text-sm leading-tight">{p.name}</p>
+                            <p className="text-[10px] text-forest/40 mt-0.5">{p.origin || "—"}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4"><span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-gold/10 text-gold-dark border border-gold/15">{p.category}</span></td>
+                      <td className="py-3 px-4 text-right font-bold text-forest">${p.price?.toFixed(2)}</td>
+                      <td className="py-3 px-4 text-center text-forest/70">{p.stock ?? "—"}</td>
+                      <td className="py-3 px-4 text-center">
+                        <button onClick={() => handleToggle(p)} className="cursor-pointer">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${p.active ? "bg-green-500/10 text-green-700 border-green-500/25" : "bg-red-500/10 text-red-700 border-red-500/25"}`}>
+                            {p.active ? <><Eye className="w-2.5 h-2.5" /> Live</> : <><EyeOff className="w-2.5 h-2.5" /> Off</>}
+                          </span>
+                        </button>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => openEdit(p)} className="p-2 text-forest/40 hover:text-gold cursor-pointer transition-colors" title="Edit"><Pencil className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleDelete(p._id, p.name)} className="p-2 text-forest/40 hover:text-red-600 cursor-pointer transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };

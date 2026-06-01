@@ -13,19 +13,20 @@ import { Button } from "@/components/portfolio/ui-elements";
 import { LuxuryToast } from "@/components/portfolio/LuxuryToast";
 import {
   Compass, Key, ShieldCheck, LayoutDashboard,
-  Package, ShoppingBag, Users, FileText, Mail, BarChart3, RefreshCw,
+  Package, ShoppingBag, Users, FileText, Mail,
+  BarChart3, RefreshCw, LogOut,
 } from "lucide-react";
 
 type Tab = "overview" | "products" | "orders" | "collectors" | "content" | "newsletter" | "analytics";
 
-const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: "overview",    label: "Overview",    icon: <LayoutDashboard className="w-4 h-4" /> },
-  { id: "products",   label: "Products",    icon: <Package className="w-4 h-4" /> },
-  { id: "orders",     label: "Orders",      icon: <ShoppingBag className="w-4 h-4" /> },
-  { id: "collectors", label: "Collectors",  icon: <Users className="w-4 h-4" /> },
-  { id: "content",    label: "Content",     icon: <FileText className="w-4 h-4" /> },
-  { id: "newsletter", label: "Newsletter",  icon: <Mail className="w-4 h-4" /> },
-  { id: "analytics",  label: "Analytics",   icon: <BarChart3 className="w-4 h-4" /> },
+const TABS: { id: Tab; label: string; icon: React.ReactNode; shortLabel: string }[] = [
+  { id: "overview",    label: "Overview",    shortLabel: "Home",       icon: <LayoutDashboard className="w-5 h-5" /> },
+  { id: "products",   label: "Products",    shortLabel: "Products",   icon: <Package className="w-5 h-5" /> },
+  { id: "orders",     label: "Orders",      shortLabel: "Orders",     icon: <ShoppingBag className="w-5 h-5" /> },
+  { id: "collectors", label: "Collectors",  shortLabel: "Members",    icon: <Users className="w-5 h-5" /> },
+  { id: "content",    label: "Content CMS", shortLabel: "Content",    icon: <FileText className="w-5 h-5" /> },
+  { id: "newsletter", label: "Newsletter",  shortLabel: "Mail",       icon: <Mail className="w-5 h-5" /> },
+  { id: "analytics",  label: "Analytics",   shortLabel: "Analytics",  icon: <BarChart3 className="w-5 h-5" /> },
 ];
 
 export default function AdminPage() {
@@ -36,7 +37,6 @@ export default function AdminPage() {
   const [loadingCollectors, setLoadingCollectors] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorGate, setErrorGate] = useState<string | null>(null);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem("origin_hills_admin_session");
@@ -48,10 +48,10 @@ export default function AdminPage() {
     if (adminPassword === "admin") {
       setIsAuthenticated(true);
       localStorage.setItem("origin_hills_admin_session", "active");
-      setToastMessage("Admin console unlocked. Welcome.");
+      setToastMessage("Admin console unlocked.");
       fetchCollectors();
     } else {
-      setErrorGate("Invalid administrative credentials.");
+      setErrorGate("Invalid credentials. Try again.");
     }
   };
 
@@ -68,24 +68,23 @@ export default function AdminPage() {
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
       await fetch("/api/admin/collectors", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status }) });
-      setToastMessage(`Status updated → ${status}`);
+      setToastMessage(`Status → ${status}`);
       fetchCollectors();
-    } catch { setToastMessage("Failed to update status"); }
+    } catch { setToastMessage("Failed to update"); }
   };
 
   const handleUpdateTins = async (id: string, tins: number) => {
     try {
       await fetch("/api/admin/collectors", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, tins }) });
-      setToastMessage(`Allocation updated → ${tins} tins`);
+      setToastMessage(`Allocation → ${tins} tins`);
       fetchCollectors();
-    } catch { setToastMessage("Failed to update tins"); }
+    } catch { setToastMessage("Failed to update"); }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("origin_hills_admin_session");
     setAdminPassword("");
-    setToastMessage("Session cleared.");
   };
 
   const getStats = () => ({
@@ -95,156 +94,165 @@ export default function AdminPage() {
     pendingAllocations: collectors.filter((c) => c.allocationStatus.toLowerCase().includes("pending")).length,
   });
 
-  // ── Login gate ──────────────────────────────────────────────────────────────
+  const activeTabData = TABS.find((t) => t.id === activeTab)!;
+
+  // ── Login Gate ────────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-forest text-ivory flex items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,168,128,0.06),transparent_65%)]" />
-        <div className="absolute inset-y-12 inset-x-12 border border-gold/10 pointer-events-none hidden sm:block" />
-        <div className="relative z-10 w-full max-w-sm bg-forest-dark border border-gold/25 p-8 sm:p-10 shadow-2xl">
-          <div className="text-center mb-8">
-            <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-gold block mb-2">ORIGIN HILLS</span>
-            <h2 className="text-2xl font-serif text-ivory tracking-wide">Admin Console</h2>
-            <div className="w-10 h-px bg-gold/40 mx-auto my-4" />
-            <p className="text-[10px] text-ivory/50 font-sans leading-relaxed">Enter admin credentials to access the management console.</p>
+      <div className="min-h-screen bg-forest flex items-center justify-center p-5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,168,128,0.07),transparent_65%)]" />
+        <div className="relative z-10 w-full max-w-xs bg-forest-dark border border-gold/25 p-7 shadow-2xl">
+          <div className="text-center mb-7">
+            <span className="text-[9px] font-sans font-bold uppercase tracking-[0.3em] text-gold block mb-3">ORIGIN HILLS</span>
+            <h2 className="text-xl font-serif text-ivory tracking-wide">Admin Console</h2>
+            <div className="w-8 h-px bg-gold/40 mx-auto my-3" />
+            <p className="text-[10px] text-ivory/45 font-sans leading-relaxed">Enter your credentials to continue.</p>
           </div>
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-3">
             {errorGate && (
-              <div className="p-3 bg-red-500/10 border border-red-500/25 text-red-400 text-[11px] font-sans text-center">{errorGate}</div>
+              <div className="p-2.5 bg-red-500/10 border border-red-500/25 text-red-400 text-[10px] font-sans text-center rounded">{errorGate}</div>
             )}
             <div className="relative">
               <input
                 type="password"
                 placeholder="Admin password"
                 value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                className="w-full bg-forest border border-ivory/15 px-4 py-3 text-xs text-ivory placeholder:text-ivory/25 focus:outline-none focus:border-gold transition-all font-sans pr-10"
+                onChange={(e) => { setAdminPassword(e.target.value); setErrorGate(null); }}
+                className="w-full bg-forest border border-ivory/15 px-4 py-3.5 text-sm text-ivory placeholder:text-ivory/25 focus:outline-none focus:border-gold transition-all font-sans pr-10 min-h-[48px]"
                 required
               />
-              <Key className="w-4 h-4 text-ivory/30 absolute right-3 top-3.5" />
+              <Key className="w-4 h-4 text-ivory/30 absolute right-3.5 top-4" />
             </div>
-            <Button type="submit" variant="secondary" className="w-full font-bold uppercase py-3.5">Unlock Console</Button>
+            <button type="submit" className="w-full bg-gold text-forest font-sans font-bold uppercase tracking-widest text-xs py-3.5 min-h-[48px] hover:bg-gold/90 transition-all active:scale-[0.98]">
+              Unlock Console
+            </button>
           </form>
         </div>
       </div>
     );
   }
 
-  // ── Main Console ─────────────────────────────────────────────────────────────
+  // ── Main Console ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f7f5f0] text-forest flex flex-col">
+    <div className="min-h-screen bg-[#f5f3ee] text-forest flex flex-col">
 
-      {/* Top Header */}
-      <header className="bg-forest text-ivory py-4 px-4 sm:px-8 border-b border-gold/15 sticky top-0 z-30">
-        <div className="max-w-screen-xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Compass className="w-5 h-5 text-gold flex-shrink-0" />
-            <div>
-              <h1 className="text-sm font-serif tracking-[0.18em] text-ivory uppercase leading-none">ORIGIN HILLS</h1>
-              <span className="text-[9px] font-sans text-gold uppercase tracking-widest">Admin Console</span>
+      {/* ── Top Header ── */}
+      <header className="bg-forest text-ivory sticky top-0 z-30 border-b border-gold/20 shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3 max-w-screen-xl mx-auto">
+          {/* Brand */}
+          <div className="flex items-center gap-2.5">
+            <Compass className="w-4 h-4 text-gold flex-shrink-0" />
+            <div className="leading-tight">
+              <span className="text-[11px] font-serif tracking-[0.2em] text-ivory uppercase block">ORIGIN HILLS</span>
+              {/* Show current tab name on mobile */}
+              <span className="text-[9px] font-sans text-gold uppercase tracking-widest sm:hidden">{activeTabData.label}</span>
+              <span className="text-[9px] font-sans text-ivory/50 uppercase tracking-widest hidden sm:block">Admin Console</span>
             </div>
           </div>
 
-          {/* Mobile tab toggle */}
-          <button
-            onClick={() => setMobileNavOpen(!mobileNavOpen)}
-            className="sm:hidden text-ivory/60 hover:text-ivory transition-colors text-[10px] font-sans uppercase tracking-widest font-bold"
-          >
-            Menu
-          </button>
-
-          <div className="hidden sm:flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-gold" />
-              <span className="text-[9px] font-sans text-ivory/70 uppercase tracking-widest">Secured</span>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-gold" />
+              <span className="text-[9px] font-sans text-ivory/60 uppercase tracking-widest">Secured</span>
             </div>
-            <button onClick={handleLogout} className="text-[9px] font-sans font-bold uppercase tracking-widest text-gold hover:text-ivory transition-colors cursor-pointer">
-              Lock Console
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-[10px] font-sans font-bold uppercase tracking-wider text-gold hover:text-ivory transition-colors cursor-pointer min-h-[36px] px-2"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Lock</span>
             </button>
           </div>
         </div>
+
+        {/* Desktop tab bar (inside header, below brand row) */}
+        <div className="hidden sm:flex border-t border-gold/10 px-4 max-w-screen-xl mx-auto overflow-x-auto">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2.5 text-[10px] font-sans font-bold uppercase tracking-widest whitespace-nowrap border-b-2 transition-all duration-200 cursor-pointer ${
+                activeTab === tab.id
+                  ? "border-gold text-gold"
+                  : "border-transparent text-ivory/50 hover:text-ivory/80"
+              }`}
+            >
+              {tab.icon}
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </header>
 
-      <div className="flex flex-1 max-w-screen-xl mx-auto w-full">
+      {/* ── Page Content ── */}
+      <main className="flex-1 px-4 py-5 sm:px-6 sm:py-8 max-w-screen-xl mx-auto w-full pb-24 sm:pb-8 overflow-x-hidden">
 
-        {/* Sidebar Nav */}
-        <aside className={`${mobileNavOpen ? "block" : "hidden"} sm:block w-full sm:w-52 flex-shrink-0 border-r border-gold/15 bg-ivory min-h-[calc(100vh-57px)] sticky top-[57px] self-start`}>
-          <nav className="flex flex-col p-3 gap-1 pt-5">
-            {TABS.map((tab) => (
+        {activeTab === "overview" && (
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-serif text-forest font-light">Ledger Overview</h2>
+                <p className="text-[10px] text-forest/40 font-sans uppercase tracking-widest mt-0.5">Collector allocations & capacity</p>
+              </div>
               <button
-                key={tab.id}
-                onClick={() => { setActiveTab(tab.id); setMobileNavOpen(false); }}
-                className={`flex items-center gap-3 px-3 py-2.5 text-left text-[11px] font-sans font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer rounded-none border-l-2 ${
-                  activeTab === tab.id
-                    ? "bg-forest text-ivory border-gold"
-                    : "text-forest/60 hover:text-forest hover:bg-forest/5 border-transparent"
-                }`}
+                onClick={fetchCollectors}
+                disabled={loadingCollectors}
+                className="flex items-center gap-1.5 px-3 py-2 border border-forest/20 text-forest/70 text-[10px] font-sans font-bold uppercase tracking-wider hover:bg-forest/5 transition-all min-h-[40px] cursor-pointer"
               >
-                {tab.icon}
-                {tab.label}
-              </button>
-            ))}
-
-            <div className="mt-4 pt-4 border-t border-gold/15 sm:hidden">
-              <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-3 py-2.5 text-[11px] font-sans font-semibold uppercase tracking-wider text-red-600 cursor-pointer">
-                Lock Console
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingCollectors ? "animate-spin" : ""}`} />
+                Refresh
               </button>
             </div>
-          </nav>
-        </aside>
+            <AdminStats stats={getStats()} />
+            <CollectorTable collectors={collectors} onUpdateStatus={handleUpdateStatus} onUpdateTins={handleUpdateTins} />
+            <InventoryManager collectors={collectors} />
+          </div>
+        )}
 
-        {/* Main Content */}
-        <main className="flex-1 p-5 sm:p-8 overflow-x-hidden">
+        {activeTab === "products"   && <ProductManager   onToast={(m) => setToastMessage(m)} />}
+        {activeTab === "orders"     && <OrderManager     onToast={(m) => setToastMessage(m)} />}
+        {activeTab === "content"    && <ContentEditor    onToast={(m) => setToastMessage(m)} />}
+        {activeTab === "newsletter" && <NewsletterManager onToast={(m) => setToastMessage(m)} />}
+        {activeTab === "analytics"  && <AnalyticsDashboard onToast={(m) => setToastMessage(m)} />}
 
-          {/* Overview Tab */}
-          {activeTab === "overview" && (
-            <div className="flex flex-col gap-8">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div>
-                  <h2 className="text-2xl font-serif text-forest font-light tracking-wide">Estate Ledger Overview</h2>
-                  <p className="text-[10px] text-forest/40 font-sans tracking-widest uppercase mt-1">Collector allocations and capacity summary</p>
-                </div>
-                <Button onClick={fetchCollectors} variant="primary" size="sm" disabled={loadingCollectors} className="flex items-center gap-1.5">
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingCollectors ? "animate-spin" : ""}`} />
-                  Refresh
-                </Button>
+        {activeTab === "collectors" && (
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-serif text-forest font-light">Collector Registry</h2>
+                <p className="text-[10px] text-forest/40 font-sans uppercase tracking-widest mt-0.5">Registered members & allocations</p>
               </div>
-              <AdminStats stats={getStats()} />
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <CollectorTable collectors={collectors} onUpdateStatus={handleUpdateStatus} onUpdateTins={handleUpdateTins} />
-                </div>
-                <div className="lg:col-span-1">
-                  <InventoryManager collectors={collectors} />
-                </div>
-              </div>
+              <button
+                onClick={fetchCollectors}
+                disabled={loadingCollectors}
+                className="flex items-center gap-1.5 px-3 py-2 border border-forest/20 text-forest/70 text-[10px] font-sans font-bold uppercase tracking-wider hover:bg-forest/5 transition-all min-h-[40px] cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingCollectors ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
             </div>
-          )}
+            <CollectorTable collectors={collectors} onUpdateStatus={handleUpdateStatus} onUpdateTins={handleUpdateTins} />
+          </div>
+        )}
+      </main>
 
-          {activeTab === "products" && <ProductManager onToast={(m) => setToastMessage(m)} />}
-          {activeTab === "orders" && <OrderManager onToast={(m) => setToastMessage(m)} />}
-          {activeTab === "content" && <ContentEditor onToast={(m) => setToastMessage(m)} />}
-          {activeTab === "newsletter" && <NewsletterManager onToast={(m) => setToastMessage(m)} />}
-          {activeTab === "analytics" && <AnalyticsDashboard onToast={(m) => setToastMessage(m)} />}
-
-          {/* Collectors Tab */}
-          {activeTab === "collectors" && (
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center justify-between flex-wrap gap-3">
-                <div>
-                  <h2 className="text-2xl font-serif text-forest font-light">Collector Registry</h2>
-                  <p className="text-[10px] text-forest/40 font-sans tracking-widest uppercase mt-1">Registered members and allocation ledger</p>
-                </div>
-                <Button onClick={fetchCollectors} variant="primary" size="sm" disabled={loadingCollectors} className="flex items-center gap-1.5">
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingCollectors ? "animate-spin" : ""}`} />
-                  Refresh
-                </Button>
-              </div>
-              <CollectorTable collectors={collectors} onUpdateStatus={handleUpdateStatus} onUpdateTins={handleUpdateTins} />
-            </div>
-          )}
-        </main>
-      </div>
+      {/* ── Mobile Bottom Tab Bar ── */}
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-forest border-t border-gold/20 grid grid-cols-7">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex flex-col items-center justify-center py-2.5 gap-0.5 cursor-pointer transition-all duration-200 ${
+              activeTab === tab.id
+                ? "text-gold"
+                : "text-ivory/40 active:text-ivory/70"
+            }`}
+          >
+            {tab.icon}
+            <span className="text-[8px] font-sans font-semibold uppercase tracking-wide leading-none">{tab.shortLabel}</span>
+          </button>
+        ))}
+      </nav>
 
       <LuxuryToast message={toastMessage} onClose={() => setToastMessage(null)} />
     </div>

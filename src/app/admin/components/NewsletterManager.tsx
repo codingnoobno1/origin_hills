@@ -48,31 +48,18 @@ export const NewsletterManager: React.FC<NewsletterManagerProps> = ({ onToast })
           <p className="text-forest/40 font-sans text-xs tracking-widest uppercase">No subscribers yet</p>
         </div>
       ) : (
-        <div className="bg-ivory border border-gold/15 overflow-hidden">
-          <table className="w-full text-left border-collapse font-sans text-xs">
-            <thead>
-              <tr className="border-b border-gold/15 bg-forest/5 text-forest/50 font-bold uppercase tracking-wider text-[10px]">
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Subscribed</th>
-                <th className="py-3 px-4 text-right">Remove</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gold/5">
-              {subscribers.map((s, i) => (
-                <tr key={i} className="hover:bg-forest/5 transition-colors">
-                  <td className="py-3 px-4 text-forest font-semibold">{s.email}</td>
-                  <td className="py-3 px-4 text-forest/60">{s.name || "—"}</td>
-                  <td className="py-3 px-4 text-forest/50">{new Date(s.subscribedAt).toLocaleDateString()}</td>
-                  <td className="py-3 px-4 text-right">
-                    <button onClick={() => remove(s.email)} className="p-1.5 text-forest/30 hover:text-red-600 cursor-pointer transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bg-ivory border border-gold/15 overflow-hidden divide-y divide-gold/5">
+          {subscribers.map((s, i) => (
+            <div key={i} className="flex items-center justify-between gap-3 px-4 py-3.5 hover:bg-forest/5 transition-colors">
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-forest text-sm truncate">{s.email}</p>
+                <p className="text-[10px] text-forest/45 mt-0.5">{s.name || "—"} · {new Date(s.subscribedAt).toLocaleDateString()}</p>
+              </div>
+              <button onClick={() => remove(s.email)} className="p-2.5 text-forest/30 hover:text-red-600 cursor-pointer transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>
