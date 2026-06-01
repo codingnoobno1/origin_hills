@@ -4,25 +4,43 @@ import React, { useState, useEffect } from "react";
 import { AdminStats } from "./components/AdminStats";
 import { CollectorTable, CollectorRecord } from "./components/CollectorTable";
 import { InventoryManager } from "./components/InventoryManager";
-import { Button, Input, LuxuryDivider } from "@/components/portfolio/ui-elements";
-import { Compass, RefreshCw, Key, ShieldCheck, DatabaseBackup } from "lucide-react";
+import { ProductManager } from "./components/ProductManager";
+import { OrderManager } from "./components/OrderManager";
+import { ContentEditor } from "./components/ContentEditor";
+import { NewsletterManager } from "./components/NewsletterManager";
+import { AnalyticsDashboard } from "./components/AnalyticsDashboard";
+import { Button } from "@/components/portfolio/ui-elements";
 import { LuxuryToast } from "@/components/portfolio/LuxuryToast";
+import {
+  Compass, Key, ShieldCheck, LayoutDashboard,
+  Package, ShoppingBag, Users, FileText, Mail, BarChart3, RefreshCw,
+} from "lucide-react";
+
+type Tab = "overview" | "products" | "orders" | "collectors" | "content" | "newsletter" | "analytics";
+
+const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: "overview",    label: "Overview",    icon: <LayoutDashboard className="w-4 h-4" /> },
+  { id: "products",   label: "Products",    icon: <Package className="w-4 h-4" /> },
+  { id: "orders",     label: "Orders",      icon: <ShoppingBag className="w-4 h-4" /> },
+  { id: "collectors", label: "Collectors",  icon: <Users className="w-4 h-4" /> },
+  { id: "content",    label: "Content",     icon: <FileText className="w-4 h-4" /> },
+  { id: "newsletter", label: "Newsletter",  icon: <Mail className="w-4 h-4" /> },
+  { id: "analytics",  label: "Analytics",   icon: <BarChart3 className="w-4 h-4" /> },
+];
 
 export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [adminPassword, setAdminPassword] = useState<string>("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [collectors, setCollectors] = useState<CollectorRecord[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingCollectors, setLoadingCollectors] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [errorGate, setErrorGate] = useState<string | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  // Auto-login during development or trace session
   useEffect(() => {
     const session = localStorage.getItem("origin_hills_admin_session");
-    if (session === "active") {
-      setIsAuthenticated(true);
-      fetchLedger();
-    }
+    if (session === "active") { setIsAuthenticated(true); fetchCollectors(); }
   }, []);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
@@ -30,244 +48,203 @@ export default function AdminPage() {
     if (adminPassword === "admin") {
       setIsAuthenticated(true);
       localStorage.setItem("origin_hills_admin_session", "active");
-      setToastMessage("Secure admin credentials accepted. Welcome back.");
-      fetchLedger();
+      setToastMessage("Admin console unlocked. Welcome.");
+      fetchCollectors();
     } else {
-      setErrorGate("Invalid administrative entry credentials.");
+      setErrorGate("Invalid administrative credentials.");
     }
   };
 
-  const fetchLedger = async () => {
-    setIsLoading(true);
+  const fetchCollectors = async () => {
+    setLoadingCollectors(true);
     try {
       const res = await fetch("/api/admin/collectors");
-      if (!res.ok) throw new Error("Could not contact registration ledger.");
       const data = await res.json();
       setCollectors(data.collectors || []);
-      if (data.isSandbox) {
-        setToastMessage("Connected successfully (Sandbox Sandbox Mode Active).");
-      }
-    } catch (err: any) {
-      setToastMessage(`Error retrieving records: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch { setToastMessage("Failed to load collector ledger"); }
+    finally { setLoadingCollectors(false); }
   };
 
-  const handleUpdateStatus = async (id: string, newStatus: string) => {
+  const handleUpdateStatus = async (id: string, status: string) => {
     try {
-      const res = await fetch("/api/admin/collectors", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus }),
-      });
-      if (!res.ok) throw new Error("Could not update allocation status.");
-      
-      setToastMessage(`Allocation request updated successfully: ${newStatus}`);
-      fetchLedger();
-    } catch (err: any) {
-      setToastMessage(`Error: ${err.message}`);
-    }
+      await fetch("/api/admin/collectors", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status }) });
+      setToastMessage(`Status updated → ${status}`);
+      fetchCollectors();
+    } catch { setToastMessage("Failed to update status"); }
   };
 
-  const handleUpdateTins = async (id: string, newTins: number) => {
+  const handleUpdateTins = async (id: string, tins: number) => {
     try {
-      const res = await fetch("/api/admin/collectors", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, tins: newTins }),
-      });
-      if (!res.ok) throw new Error("Could not adjust allocation quantity.");
-      
-      setToastMessage(`Collector allocation quantity modified to ${newTins} tins.`);
-      fetchLedger();
-    } catch (err: any) {
-      setToastMessage(`Error: ${err.message}`);
-    }
-  };
-
-  const handleSeedDatabase = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/admin/collectors", { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Seed failure.");
-      setToastMessage(data.message || "Database seeded successfully!");
-      fetchLedger();
-    } catch (err: any) {
-      setToastMessage(`Error: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+      await fetch("/api/admin/collectors", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, tins }) });
+      setToastMessage(`Allocation updated → ${tins} tins`);
+      fetchCollectors();
+    } catch { setToastMessage("Failed to update tins"); }
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("origin_hills_admin_session");
     setAdminPassword("");
-    setToastMessage("Session credentials cleared. Safe travels.");
+    setToastMessage("Session cleared.");
   };
 
-  // Compile overview statistics
-  const getStats = () => {
-    const totalCollectors = collectors.length;
-    const activeReservations = collectors.reduce((acc, c) => acc + (c.allocationTins || 1), 0);
-    const approvedAllocations = collectors.filter((c) => c.allocationStatus === "Approved").length;
-    const pendingAllocations = collectors.filter((c) => c.allocationStatus.toLowerCase().includes("pending")).length;
+  const getStats = () => ({
+    totalCollectors: collectors.length,
+    activeReservations: collectors.reduce((acc, c) => acc + (c.allocationTins || 1), 0),
+    approvedAllocations: collectors.filter((c) => c.allocationStatus === "Approved").length,
+    pendingAllocations: collectors.filter((c) => c.allocationStatus.toLowerCase().includes("pending")).length,
+  });
 
-    return { totalCollectors, activeReservations, approvedAllocations, pendingAllocations };
-  };
-
+  // ── Login gate ──────────────────────────────────────────────────────────────
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-forest text-ivory flex items-center justify-center p-6 relative overflow-hidden">
-        {/* Abstract vector backgrounds */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(197,168,128,0.06),transparent_65%)]" />
-        <div className="absolute inset-y-12 inset-x-12 border border-gold/10 pointer-events-none" />
-
-        <div className="relative z-10 w-full max-w-md bg-forest-dark border border-gold/25 p-8 sm:p-12 shadow-2xl flex flex-col justify-center">
+        <div className="absolute inset-y-12 inset-x-12 border border-gold/10 pointer-events-none hidden sm:block" />
+        <div className="relative z-10 w-full max-w-sm bg-forest-dark border border-gold/25 p-8 sm:p-10 shadow-2xl">
           <div className="text-center mb-8">
-            <span className="text-[10px] font-sans font-bold uppercase tracking-[0.25em] text-gold block mb-2">
-              ORIGIN HILLS
-            </span>
-            <h2 className="text-2xl font-serif text-ivory tracking-wide leading-snug">
-              Administrative Gate
-            </h2>
-            <div className="w-12 h-px bg-gold/50 mx-auto my-4" />
-            <p className="text-[10px] text-ivory/55 font-sans leading-relaxed tracking-wide max-w-[240px] mx-auto font-light">
-              Enter administrative cellar key credentials to review private allocation logs and database ledgers.
-            </p>
+            <span className="text-[10px] font-sans font-bold uppercase tracking-[0.3em] text-gold block mb-2">ORIGIN HILLS</span>
+            <h2 className="text-2xl font-serif text-ivory tracking-wide">Admin Console</h2>
+            <div className="w-10 h-px bg-gold/40 mx-auto my-4" />
+            <p className="text-[10px] text-ivory/50 font-sans leading-relaxed">Enter admin credentials to access the management console.</p>
           </div>
-
-          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-5">
+          <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-4">
             {errorGate && (
-              <div className="p-3 bg-red-500/10 border border-red-500/25 text-red-400 text-[11px] font-sans text-center tracking-wide">
-                {errorGate}
-              </div>
+              <div className="p-3 bg-red-500/10 border border-red-500/25 text-red-400 text-[11px] font-sans text-center">{errorGate}</div>
             )}
-            
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] uppercase tracking-wider text-ivory/50 font-semibold font-sans">
-                Administrative Passcode
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  placeholder="Enter 'admin' to unlock ledger..."
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  className="w-full bg-forest border border-ivory/15 px-4 py-3 text-xs text-ivory placeholder:text-ivory/25 focus:outline-none focus:border-gold transition-all duration-300 font-sans pr-10"
-                  required
-                />
-                <Key className="w-4 h-4 text-ivory/30 absolute right-3 top-3.5" />
-              </div>
+            <div className="relative">
+              <input
+                type="password"
+                placeholder="Admin password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                className="w-full bg-forest border border-ivory/15 px-4 py-3 text-xs text-ivory placeholder:text-ivory/25 focus:outline-none focus:border-gold transition-all font-sans pr-10"
+                required
+              />
+              <Key className="w-4 h-4 text-ivory/30 absolute right-3 top-3.5" />
             </div>
-
-            <Button type="submit" variant="secondary" className="w-full mt-2 font-bold uppercase tracking-wider py-4">
-              Unlock Ledger
-            </Button>
+            <Button type="submit" variant="secondary" className="w-full font-bold uppercase py-3.5">Unlock Console</Button>
           </form>
         </div>
       </div>
     );
   }
 
+  // ── Main Console ─────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-ivory text-forest pb-24">
-      {/* Top Header Section */}
-      <header className="bg-forest text-ivory py-6 px-6 md:px-12 border-b border-gold/15 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="min-h-screen bg-[#f7f5f0] text-forest flex flex-col">
+
+      {/* Top Header */}
+      <header className="bg-forest text-ivory py-4 px-4 sm:px-8 border-b border-gold/15 sticky top-0 z-30">
+        <div className="max-w-screen-xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Compass className="w-5 h-5 text-gold" />
+            <Compass className="w-5 h-5 text-gold flex-shrink-0" />
             <div>
-              <h1 className="text-sm font-serif tracking-[0.2em] text-ivory uppercase">
-                ORIGIN HILLS
-              </h1>
-              <span className="text-[9px] font-sans text-gold uppercase tracking-[0.25em] font-semibold mt-0.5 block">
-                Collector Cellar Management console
-              </span>
+              <h1 className="text-sm font-serif tracking-[0.18em] text-ivory uppercase leading-none">ORIGIN HILLS</h1>
+              <span className="text-[9px] font-sans text-gold uppercase tracking-widest">Admin Console</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleLogout}
-              className="text-[9px] font-sans font-bold uppercase tracking-widest text-gold hover:text-gold-light transition-colors duration-300 cursor-pointer"
-            >
-              Lock Console
-            </button>
-            <span className="h-4 w-px bg-ivory/20" />
+          {/* Mobile tab toggle */}
+          <button
+            onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            className="sm:hidden text-ivory/60 hover:text-ivory transition-colors text-[10px] font-sans uppercase tracking-widest font-bold"
+          >
+            Menu
+          </button>
+
+          <div className="hidden sm:flex items-center gap-5">
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-gold" />
-              <span className="text-[9px] font-sans text-ivory/80 uppercase tracking-widest font-semibold">
-                Console Secured
-              </span>
+              <span className="text-[9px] font-sans text-ivory/70 uppercase tracking-widest">Secured</span>
             </div>
+            <button onClick={handleLogout} className="text-[9px] font-sans font-bold uppercase tracking-widest text-gold hover:text-ivory transition-colors cursor-pointer">
+              Lock Console
+            </button>
           </div>
         </div>
       </header>
 
-      {/* Main Panel Content */}
-      <main className="max-w-7xl mx-auto px-6 md:px-12 mt-10 flex flex-col gap-8">
-        
-        {/* Dynamic Controls Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-gold/15 pb-6">
-          <div>
-            <h2 className="text-3xl font-serif text-forest tracking-wide font-light">
-              Estate Ledger Logs
-            </h2>
-            <p className="text-[10px] text-forest/50 font-sans tracking-wide mt-0.5 uppercase">
-              Operational interface connected to MongoAtlas clusters
-            </p>
-          </div>
+      <div className="flex flex-1 max-w-screen-xl mx-auto w-full">
 
-          <div className="flex items-center gap-3 flex-wrap">
-            {/* Database seed button */}
-            <Button
-              onClick={handleSeedDatabase}
-              variant="outline"
-              size="sm"
-              disabled={isLoading}
-              className="flex items-center gap-1.5 border-forest/20 text-forest/75 bg-transparent hover:bg-forest/5 hover:border-forest"
-            >
-              <DatabaseBackup className="w-3.5 h-3.5 text-gold" />
-              Seed Mock Ledgers
-            </Button>
-            
-            <Button
-              onClick={fetchLedger}
-              variant="primary"
-              size="sm"
-              disabled={isLoading}
-              className="flex items-center gap-1.5 font-bold"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 text-ivory ${isLoading ? "animate-spin" : ""}`} />
-              Refresh Database
-            </Button>
-          </div>
-        </div>
+        {/* Sidebar Nav */}
+        <aside className={`${mobileNavOpen ? "block" : "hidden"} sm:block w-full sm:w-52 flex-shrink-0 border-r border-gold/15 bg-ivory min-h-[calc(100vh-57px)] sticky top-[57px] self-start`}>
+          <nav className="flex flex-col p-3 gap-1 pt-5">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => { setActiveTab(tab.id); setMobileNavOpen(false); }}
+                className={`flex items-center gap-3 px-3 py-2.5 text-left text-[11px] font-sans font-semibold uppercase tracking-wider transition-all duration-200 cursor-pointer rounded-none border-l-2 ${
+                  activeTab === tab.id
+                    ? "bg-forest text-ivory border-gold"
+                    : "text-forest/60 hover:text-forest hover:bg-forest/5 border-transparent"
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
 
-        {/* Overview Stats Sub-Panel */}
-        <AdminStats stats={getStats()} />
+            <div className="mt-4 pt-4 border-t border-gold/15 sm:hidden">
+              <button onClick={handleLogout} className="w-full text-left flex items-center gap-3 px-3 py-2.5 text-[11px] font-sans font-semibold uppercase tracking-wider text-red-600 cursor-pointer">
+                Lock Console
+              </button>
+            </div>
+          </nav>
+        </aside>
 
-        {/* Major Workspaces Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          {/* Left Table (2 cols span) */}
-          <div className="lg:col-span-2">
-            <CollectorTable
-              collectors={collectors}
-              onUpdateStatus={handleUpdateStatus}
-              onUpdateTins={handleUpdateTins}
-            />
-          </div>
+        {/* Main Content */}
+        <main className="flex-1 p-5 sm:p-8 overflow-x-hidden">
 
-          {/* Right Capacity Manager (1 col span) */}
-          <div className="lg:col-span-1">
-            <InventoryManager collectors={collectors} />
-          </div>
-        </div>
+          {/* Overview Tab */}
+          {activeTab === "overview" && (
+            <div className="flex flex-col gap-8">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <h2 className="text-2xl font-serif text-forest font-light tracking-wide">Estate Ledger Overview</h2>
+                  <p className="text-[10px] text-forest/40 font-sans tracking-widest uppercase mt-1">Collector allocations and capacity summary</p>
+                </div>
+                <Button onClick={fetchCollectors} variant="primary" size="sm" disabled={loadingCollectors} className="flex items-center gap-1.5">
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingCollectors ? "animate-spin" : ""}`} />
+                  Refresh
+                </Button>
+              </div>
+              <AdminStats stats={getStats()} />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                  <CollectorTable collectors={collectors} onUpdateStatus={handleUpdateStatus} onUpdateTins={handleUpdateTins} />
+                </div>
+                <div className="lg:col-span-1">
+                  <InventoryManager collectors={collectors} />
+                </div>
+              </div>
+            </div>
+          )}
 
-      </main>
+          {activeTab === "products" && <ProductManager onToast={(m) => setToastMessage(m)} />}
+          {activeTab === "orders" && <OrderManager onToast={(m) => setToastMessage(m)} />}
+          {activeTab === "content" && <ContentEditor onToast={(m) => setToastMessage(m)} />}
+          {activeTab === "newsletter" && <NewsletterManager onToast={(m) => setToastMessage(m)} />}
+          {activeTab === "analytics" && <AnalyticsDashboard onToast={(m) => setToastMessage(m)} />}
+
+          {/* Collectors Tab */}
+          {activeTab === "collectors" && (
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <h2 className="text-2xl font-serif text-forest font-light">Collector Registry</h2>
+                  <p className="text-[10px] text-forest/40 font-sans tracking-widest uppercase mt-1">Registered members and allocation ledger</p>
+                </div>
+                <Button onClick={fetchCollectors} variant="primary" size="sm" disabled={loadingCollectors} className="flex items-center gap-1.5">
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingCollectors ? "animate-spin" : ""}`} />
+                  Refresh
+                </Button>
+              </div>
+              <CollectorTable collectors={collectors} onUpdateStatus={handleUpdateStatus} onUpdateTins={handleUpdateTins} />
+            </div>
+          )}
+        </main>
+      </div>
 
       <LuxuryToast message={toastMessage} onClose={() => setToastMessage(null)} />
     </div>
