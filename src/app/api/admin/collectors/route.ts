@@ -93,29 +93,31 @@ export async function PATCH(request: Request) {
     if (status !== undefined) updateFields.allocationStatus = status;
     if (tins !== undefined) updateFields.allocationTins = Number(tins);
 
-    // Parse ID
-    let queryId: string | ObjectId = id;
-    try {
-      if (ObjectId.isValid(id)) {
-        queryId = new ObjectId(id);
-      }
-    } catch (e) {
-      // Fallback to string search
-    }
-
-    const result = await db.collection("collectors").updateOne(
-      { _id: queryId },
-      { $set: updateFields }
-    );
-
-    if (result.matchedCount === 0) {
-      // Try with string id directly
-      const resultString = await db.collection("collectors").updateOne(
-        { _id: String(id) },
+    let result;
+    if (ObjectId.isValid(id)) {
+      result = await db.collection("collectors").updateOne(
+        { _id: new ObjectId(id) } as any,
         { $set: updateFields }
       );
-      if (resultString.matchedCount === 0) {
-        return NextResponse.json({ error: "Collector not found in database." }, { status: 404 });
+    } else {
+      result = await db.collection("collectors").updateOne(
+        { _id: String(id) } as any,
+        { $set: updateFields }
+      );
+    }
+
+    if (result.matchedCount === 0) {
+      // Secondary check: if we queried as ObjectId and failed, try querying as literal string id
+      if (ObjectId.isValid(id)) {
+        const resultString = await db.collection("collectors").updateOne(
+          { _id: String(id) } as any,
+          { $set: updateFields }
+        );
+        if (resultString.matchedCount === 0) {
+          return NextResponse.json({ error: "Collector not found in database ledger." }, { status: 404 });
+        }
+      } else {
+        return NextResponse.json({ error: "Collector not found in database ledger." }, { status: 404 });
       }
     }
 
