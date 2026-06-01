@@ -15,44 +15,54 @@ interface SourcingRegion {
 
 const REGIONS: SourcingRegion[] = [
   {
-    id: "darjeeling",
-    name: "Makaibari Hills",
-    country: "Darjeeling, India",
-    elevation: "1,500m - 1,800m",
-    terroir: "Subtropical misty forest loam, high acidic minerals",
-    crop: "First Flush Black Pearl Tea",
-    coordinates: "26.8529° N, 88.2636° E",
-    description: "Nestled in the foothills of the Himalayas, this estate is blessed by dense high-altitude mists that slow leaf growth, concentrating rich muscatel and honey grape aromatics.",
+    id: "upper-assam",
+    name: "Upper Assam Estates",
+    country: "Assam, India",
+    elevation: "1,000m - 1,500m",
+    terroir: "Monsoon-fed soil, Subtropical climate, Rich mineral composition, Seasonal mountain mist",
+    crop: "Premium Orthodox Black Tea",
+    coordinates: "27.1825° N, 94.9275° E",
+    description: "Nestled within the fertile landscapes of Northeast India, these estates produce teas celebrated globally for their strength, complexity, and aromatic character.",
   },
   {
-    id: "uji",
-    name: "Uji Kyoto Gardens",
-    country: "Kyoto, Japan",
-    elevation: "200m - 350m",
-    terroir: "Alluvial river clay, heavy shade canvas covered",
-    crop: "Ceremonial Gyokuro Jade Dew",
-    coordinates: "34.8906° N, 135.8039° E",
-    description: "Located near the Uji river, these rolling mist-kissed hills utilize high-end bamboo straw mats to shade the tea leaves for 20 days prior to plucking, amplifying chlorophyll and savory L-theanine umami.",
+    id: "dibrugarh",
+    name: "Dibrugarh Estates",
+    country: "Assam, India",
+    elevation: "104m",
+    terroir: "Highly fertile alluvial floodplain soil, high tropical rainfall",
+    crop: "Balanced Orthodox Sweet Yield",
+    coordinates: "27.4728° N, 94.9120° E",
+    description: "Renowned for producing teas with a remarkably balanced structure, layered natural sweetness, and complex floral highlights.",
   },
   {
-    id: "wuyi",
-    name: "Wuyi Cliffs",
-    country: "Fujian, China",
-    elevation: "900m - 1,100m",
-    terroir: "Volcanic mineral rock crevices, high morning mist",
-    crop: "Phoenix Dancong Oolong",
-    coordinates: "27.6496° N, 117.9868° E",
-    description: "Tea bushes grow directly inside the steep volcanic rock gorges of the Wuyi Mountains. The resulting tea leaves absorb rich subterranean iron and minerals, imparting a legendary rocky character.",
+    id: "tinsukia",
+    name: "Tinsukia Gardens",
+    country: "Assam, India",
+    elevation: "116m",
+    terroir: "Clayey loam soil rich in organic matter, shaded cover",
+    crop: "Bold Aromatic Concentration",
+    coordinates: "27.5015° N, 95.3601° E",
+    description: "These gardens produce teas of exceptionally bold character, with intense malty depth and outstanding aromatic concentrations.",
   },
   {
-    id: "ilam",
-    name: "Ilam Valleys",
-    country: "Ilam, Nepal",
-    elevation: "2,100m - 2,400m",
-    terroir: "Pristine glacial slate soils, intense UV exposure",
-    crop: "Silver Needle Imperial White",
-    coordinates: "26.9117° N, 87.9255° E",
-    description: "Cultivated in alpine fresh air at the absolute ceiling of tea growth, these pristine slopes receive direct solar intensity, creating velvet down buds rich in protective antioxidants.",
+    id: "doomdooma",
+    name: "Doomdooma Valley",
+    country: "Assam, India",
+    elevation: "120m",
+    terroir: "Deep acidic soil, heavy forest canopy influence",
+    crop: "Elegant Smoked Golden Buds",
+    coordinates: "27.5611° N, 95.5724° E",
+    description: "A specialized terroir that yields orthodox teas with elegant complexity, golden tip concentration, and an extremely refined finish.",
+  },
+  {
+    id: "sivasagar",
+    name: "Sivasagar Slopes",
+    country: "Assam, India",
+    elevation: "95m",
+    terroir: "Lowland silty clay, historically cultivated royal estates",
+    crop: "Smooth Velvet Aged Orthodox",
+    coordinates: "26.9826° N, 94.6312° E",
+    description: "Steeped in royal heritage, these historical estates yield teas with exceptionally smooth textures and extraordinary cup depth.",
   },
 ];
 
@@ -74,12 +84,12 @@ export const SourcingMap: React.FC = () => {
               ESTATE TERROIR
             </span>
             <h2 className="text-3xl sm:text-5xl font-serif text-ivory font-light leading-tight">
-              Single-Origin Terroirs
+              Assam Heritage Terroirs
             </h2>
             <div className="w-12 h-px bg-gold my-4" />
           </div>
           <p className="text-xs text-ivory/60 font-sans tracking-wide leading-relaxed max-w-sm font-light">
-            We operate at extreme elevations. High-altitude cultivation subjects our crops to cooler temperatures, forcing the tea plants to synthesize richer, highly concentrated oils.
+            The finest teas are inseparable from the lands that produce them. The climate, elevation, rainfall, and soil composition of Assam create some of the world's most distinctive tea profiles.
           </p>
         </div>
 
@@ -94,8 +104,8 @@ export const SourcingMap: React.FC = () => {
             <div className="flex items-center justify-between border-b border-gold/10 pb-4 relative z-10">
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-gold" />
-                <span className="text-[10px] font-sans uppercase font-bold tracking-widest text-ivory/60">
-                  Global Sourcing Registry Map
+                 <span className="text-[10px] font-sans uppercase font-bold tracking-widest text-ivory/60">
+                  Assam Heritage Terroirs Sourcing Map
                 </span>
               </div>
               <span className="text-[9px] font-sans text-gold tracking-widest uppercase font-semibold">
@@ -115,10 +125,11 @@ export const SourcingMap: React.FC = () => {
                 
                 // Absolute positioning offsets for premium layout
                 const positions = [
-                  { top: "60%", left: "30%" }, // Darjeeling
-                  { top: "45%", left: "68%" }, // Uji Kyoto
-                  { top: "35%", left: "50%" }, // Wuyi
-                  { top: "50%", left: "20%" }, // Nepal Ilam
+                  { top: "45%", left: "45%" }, // Upper Assam
+                  { top: "35%", left: "30%" }, // Dibrugarh
+                  { top: "30%", left: "60%" }, // Tinsukia
+                  { top: "25%", left: "75%" }, // Doomdooma
+                  { top: "60%", left: "20%" }, // Sivasagar
                 ];
 
                 return (

@@ -15,15 +15,18 @@ export const BrandPhilosophy: React.FC = () => {
           THE MANIFESTO OF CALM
         </span>
         
-        <p className="text-xl sm:text-3xl md:text-5xl font-serif font-light leading-relaxed italic text-ivory-light mb-8 select-none">
-          “Time is the ultimate luxury. <br />
-          Steeping is the silent art of mastering it.”
+        <p className="text-xl sm:text-2xl md:text-4xl font-serif font-light leading-relaxed italic text-ivory-light mb-8 select-none">
+          “A truly exceptional tea cannot be rushed.”
         </p>
 
         <div className="w-12 h-[1px] bg-gold/40 mx-auto my-6" />
 
-        <p className="text-xs text-ivory/50 font-sans tracking-wide leading-relaxed max-w-lg mx-auto font-light">
-          At Origin Hills, we pluck only the silver tips and pristine double-leaves during the fleeting golden hours of dawn. What we bottle is not just organic leaves, but the slow, patient breath of high elevation terroirs.
+        <p className="text-xs sm:text-sm text-ivory/70 font-sans tracking-wide leading-relaxed max-w-xl mx-auto font-light">
+          From the first pluck to the final cup, every Origin Hills tea reflects the philosophy that excellence is measured in patience.
+          <br /><br />
+          What we offer is more than tea. It is an invitation to slow down. To observe. To reflect. To reconnect with the ritual of intentional living.
+          <br /><br />
+          Steeping becomes more than preparation—it becomes presence.
         </p>
       </div>
     </section>

@@ -18,33 +18,35 @@ export const InteractiveFlavorWheel: React.FC<InteractiveFlavorWheelProps> = ({
   const [selectedTaste, setSelectedTaste] = useState<string | null>(null);
 
   const moods = [
-    { id: "meditative", label: "Meditative", desc: "For slow deep reflection", icon: <Brain className="w-4 h-4 text-gold" /> },
-    { id: "revitalizing", label: "Revitalizing", desc: "Clean focus & clarity", icon: <RefreshCw className="w-4 h-4 text-gold" /> },
-    { id: "sensory", label: "Rich Sensory", desc: "Intense aroma & taste profile", icon: <Sparkles className="w-4 h-4 text-gold" /> },
-    { id: "comfort", label: "Serene Comfort", desc: "Warm soothing balance", icon: <Heart className="w-4 h-4 text-gold" /> },
+    { id: "focus", label: "Focus & Clarity", desc: "For alert, centered presence", icon: <RefreshCw className="w-4 h-4 text-gold" /> },
+    { id: "reflection", label: "Deep Reflection", desc: "For slow, quiet contemplation", icon: <Brain className="w-4 h-4 text-gold" /> },
+    { id: "social", label: "Social Gathering", desc: "For warm, elegant sharing", icon: <Sparkles className="w-4 h-4 text-gold" /> },
+    { id: "calm", label: "Evening Calm", desc: "For soothing transition and peace", icon: <Heart className="w-4 h-4 text-gold" /> },
   ];
 
   const tastes = [
-    { id: "floral", label: "Delicate Floral", category: "White" },
-    { id: "savory", label: "Sea-Spray Umami", category: "Green" },
-    { id: "honey", label: "Honey Muscatel", category: "Black" },
-    { id: "mineral", label: "Roasted Mineral", category: "Oolong" },
+    { id: "floral", label: "Floral Focus", category: "Floral Reserve" },
+    { id: "malty", label: "Malty Warmth", category: "Assam Heritage" },
+    { id: "smoky", label: "Smoky Layered", category: "Mountain Reserve" },
+    { id: "citrus", label: "Citrus Crisp", category: "Collector Reserve" },
+    { id: "umami", label: "Umami Savory", category: "Imperial Grade" },
+    { id: "sweet", label: "Sweet Delicate", category: "Collector Reserve" },
   ];
 
   // Pick recommendation based on answers
   const getRecommendation = (): TeaProduct | null => {
     if (!selectedMood && !selectedTaste) return null;
 
-    // Use selections to match category
-    let targetCategory: "White" | "Green" | "Black" | "Oolong" = "White";
+    let targetCategory: string = "Assam Heritage";
+
     if (selectedTaste) {
       const match = tastes.find((t) => t.id === selectedTaste);
-      if (match) targetCategory = match.category as any;
+      if (match) targetCategory = match.category;
     } else if (selectedMood) {
-      if (selectedMood === "meditative") targetCategory = "White";
-      else if (selectedMood === "revitalizing") targetCategory = "Green";
-      else if (selectedMood === "sensory") targetCategory = "Oolong";
-      else targetCategory = "Black";
+      if (selectedMood === "focus") targetCategory = "Imperial Grade";
+      else if (selectedMood === "reflection") targetCategory = "Mountain Reserve";
+      else if (selectedMood === "social") targetCategory = "Floral Reserve";
+      else targetCategory = "Assam Heritage";
     }
 
     return products.find((p) => p.category === targetCategory) || products[0];

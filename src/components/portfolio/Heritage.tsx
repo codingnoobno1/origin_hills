@@ -36,20 +36,23 @@ export const Heritage: React.FC = () => {
               OUR HERITAGE
             </span>
             <h2 className="text-3xl sm:text-5xl font-serif text-forest font-light leading-tight mb-6">
-              Quiet Luxury, <br />
-              <span className="italic font-normal text-gold text-serif">harvested by hand.</span>
+              The Heritage of <br />
+              <span className="italic font-normal text-gold text-serif">Origin Hills</span>
             </h2>
             <div className="w-12 h-px bg-gold/50 my-2" />
             
             <div className="flex flex-col gap-4 text-xs font-sans text-forest/75 font-light leading-relaxed tracking-wide">
               <p>
-                In an era dominated by high-speed processing and artificial flavor enhancers, Origin Hills was founded to preserve the meditative, quiet sanctuary of slow steeping. We reject industrialized agriculture completely.
+                Born in Assam—the heartland of the world's finest orthodox tea—Origin Hills was created to preserve the disappearing art of slow tea craftsmanship.
               </p>
               <p>
-                Our farmers operate in small, biodynamic cooperatives across Darjeeling, Uji, and East Nepal. They ascend steep mountain terrain under the cover of early morning dew to hand-pluck only the iconic <em>“two leaves and a bud”</em>—the absolute ceiling of quality and essential oil concentration.
+                In an age dominated by industrial production and convenience, we remain committed to small-batch excellence and traditional methods that allow tea to express its natural character.
               </p>
-              <p className="italic font-semibold text-gold-dark mt-2">
-                “This is the Loro Piana of tea—an uncompromised dedication to raw botanical fibers and immaculate natural origins.”
+              <p>
+                We collaborate with select gardens and artisans who value quality over volume, producing teas that reflect the identity of their terroir, season, and harvest. Each cup tells a story of heritage, patience, and unwavering attention to detail.
+              </p>
+              <p className="italic font-semibold text-gold-dark mt-2 border-l-2 border-gold/30 pl-4 py-1 bg-gold/5">
+                “Luxury is not excess. Luxury is uncompromising attention to detail.”
               </p>
             </div>
           </div>
@@ -81,23 +84,26 @@ export const Heritage: React.FC = () => {
           {/* Text Narrative Column */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <span className="text-[10px] font-sans font-bold uppercase tracking-[0.25em] text-gold mb-3 block">
-              THE MATURITY Manifest
+              CRAFTSMANSHIP
             </span>
             <h2 className="text-3xl sm:text-5xl font-serif text-forest font-light leading-tight mb-6">
-              Oxidation & <br />
-              <span className="italic font-normal text-gold text-serif">slow drying art.</span>
+              The Craft Behind <br />
+              <span className="italic font-normal text-gold text-serif">Every Leaf</span>
             </h2>
             <div className="w-12 h-px bg-gold/50 my-2" />
             
             <div className="flex flex-col gap-4 text-xs font-sans text-forest/75 font-light leading-relaxed tracking-wide">
               <p>
-                Once harvested, the fragile leaves are transported immediately in padded bamboo baskets to our drying huts. Here, they undergo withering over slow wood fire coal heat.
+                Exceptional tea begins long before it reaches the cup. Each harvest undergoes careful withering, rolling, oxidation, and drying under controlled conditions that preserve aroma, complexity, and natural character.
               </p>
               <p>
-                Our tea master, with a lineage spanning seven generations, conducts touch inspections to monitor the rate of leaf moisture loss and soft enzymatic oxidation. We allow our teas to mature naturally without chemical accelerants, bringing out an unmatched complex palette.
+                Our artisans evaluate every stage by hand, allowing the leaf to develop naturally without artificial enhancement or accelerated processing.
+              </p>
+              <p className="font-semibold text-gold-dark">
+                No shortcuts. No artificial flavoring. No compromise. Only patience, precision, and time.
               </p>
               <p>
-                Every single package of Origin Hills carries a certified lot identification code, allowing collectors to verify the exact slope location, harvest hour, and tasting batch characteristics of their tea.
+                Every Origin Hills tea is crafted to capture the essence of its harvest season and place of origin.
               </p>
             </div>
           </div>

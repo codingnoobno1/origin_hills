@@ -46,14 +46,20 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onRegistryClick }) =
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-3xl sm:text-5xl md:text-7xl font-serif text-ivory font-light leading-[1.1] mb-8 max-w-4xl tracking-tight">
-          Where soil, mist, <br className="hidden sm:inline" />
-          and time steer <span className="italic font-normal text-gold text-serif gold-glow">perfection.</span>
+        <h1 className="text-3xl sm:text-5xl md:text-7xl font-serif text-ivory font-light leading-[1.1] mb-4 max-w-4xl tracking-tight">
+          The Art of Rare Tea
         </h1>
 
+        {/* Brand Subtitle */}
+        <p className="text-sm sm:text-lg italic text-gold font-serif mb-8 tracking-wide">
+          Crafted in the mist-covered hills of Northeast India.
+        </p>
+
         {/* Brand narrative baseline */}
-        <p className="text-xs sm:text-sm text-ivory/70 font-sans tracking-wide leading-relaxed max-w-lg mb-10 font-light">
-          An exquisite registry of limited micro-batch tea allocations, hand-plucked in high-altitude clouds and crafted for collectors of the ultimate steeping luxury.
+        <p className="text-xs sm:text-sm text-ivory/80 font-sans tracking-wide leading-relaxed max-w-2xl mb-10 font-light">
+          Origin Hills is a private tea house dedicated to exceptional small-batch teas sourced from renowned mountain estates and crafted for collectors of taste, ritual, and refinement.
+          <br /><br />
+          Every harvest is selected for character, provenance, and craftsmanship—offering a tea experience rooted in authenticity and elevated by quiet luxury.
         </p>
 
         {/* Actions */}
@@ -64,7 +70,7 @@ export const Hero: React.FC<HeroProps> = ({ onExploreClick, onRegistryClick }) =
             size="lg"
             className="w-full sm:w-auto shadow-md"
           >
-            Explore Reserve
+            Explore The Collection
           </Button>
           <Button
             onClick={onRegistryClick}

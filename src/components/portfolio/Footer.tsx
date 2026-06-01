@@ -37,8 +37,11 @@ export const Footer: React.FC = () => {
             <h3 className="text-sm font-serif tracking-[0.2em] text-ivory uppercase">
               ORIGIN HILLS
             </h3>
-            <p className="text-xs text-ivory/50 font-sans tracking-wide leading-relaxed font-light">
-              Experience the uncompromised quiet luxury of single-origin estate crops. Meticulously hand-plucked in alpine clouds and tailored for collectors of the fine steeping ritual.
+            <p className="text-xs text-ivory/60 font-sans tracking-wide leading-relaxed font-light">
+              Crafted for collectors of taste. Rooted in the tea heritage of Assam and inspired by the timeless rituals of tea culture around the world.
+            </p>
+            <p className="text-[10px] text-gold font-sans tracking-widest uppercase font-semibold">
+              Small-batch production • Authentic sourcing • Quiet luxury
             </p>
           </div>
 
@@ -74,9 +77,9 @@ export const Footer: React.FC = () => {
               Sourcing Headquarters
             </h4>
             <address className="not-italic text-xs font-sans text-ivory/60 leading-relaxed font-light">
-              Origin Hills Estate Sourcing<br />
-              High Slopes Compound, Sect 4<br />
-              Darjeeling Hills, WB, India<br />
+              Origin Hills Tea House<br />
+              Assam • India<br />
+              Exports • UAE • Global<br />
               <span className="text-gold mt-2 block font-semibold">concierge@originhills.com</span>
             </address>
           </div>

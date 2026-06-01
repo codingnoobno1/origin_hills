@@ -3,18 +3,20 @@ import { TeaProduct, ProductCard } from "./ProductCard";
 
 interface CollectionGridProps {
   products: TeaProduct[];
+  loading?: boolean;
   onSelectProduct: (product: TeaProduct) => void;
   onAddToCart: (product: TeaProduct) => void;
 }
 
 export const CollectionGrid: React.FC<CollectionGridProps> = ({
   products,
+  loading = false,
   onSelectProduct,
   onAddToCart,
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  const categories = ["All", "White", "Black", "Green", "Oolong"];
+  const categories = ["All", "Assam Heritage", "Floral Reserve", "Mountain Reserve", "Imperial Grade", "Collector Reserve"];
 
   const filteredProducts = activeCategory === "All"
     ? products
@@ -34,7 +36,7 @@ export const CollectionGrid: React.FC<CollectionGridProps> = ({
           </h2>
           <div className="w-12 h-[1px] bg-gold mx-auto my-6" />
           <p className="text-xs sm:text-sm text-forest/60 font-sans tracking-wide leading-relaxed max-w-lg mx-auto font-light">
-            Each batch represents a singular vintage crop, individually vacuum-sealed in oxygen-depleted glass vials at the moment of drying to preserve pure volatile aromatic compounds.
+            A curated collection of exceptional teas selected for their rarity, craftsmanship, and sensory distinction. Each release is produced in limited quantities and allocated seasonally.
           </p>
         </div>
 
@@ -59,16 +61,35 @@ export const CollectionGrid: React.FC<CollectionGridProps> = ({
         </div>
 
         {/* Product Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onSelectProduct={onSelectProduct}
-              onAddToCart={onAddToCart}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="animate-pulse bg-forest/5 border border-gold/10 aspect-[4/5]">
+                <div className="w-full h-2/3 bg-forest/10" />
+                <div className="p-4 flex flex-col gap-3">
+                  <div className="h-2 bg-forest/10 rounded w-1/3" />
+                  <div className="h-3 bg-forest/10 rounded w-3/4" />
+                  <div className="h-2 bg-forest/10 rounded w-1/2" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-20 text-forest/40 font-sans text-xs tracking-widest uppercase">
+            No products found in this category
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onSelectProduct={onSelectProduct}
+                onAddToCart={onAddToCart}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Sourcing Footnote */}
         <div className="text-center mt-16 text-[9px] font-sans text-forest/40 tracking-widest uppercase">
