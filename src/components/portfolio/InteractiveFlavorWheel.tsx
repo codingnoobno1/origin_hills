@@ -25,28 +25,28 @@ export const InteractiveFlavorWheel: React.FC<InteractiveFlavorWheelProps> = ({
   ];
 
   const tastes = [
-    { id: "floral", label: "Floral Focus", category: "Floral Reserve" },
-    { id: "malty", label: "Malty Warmth", category: "Assam Heritage" },
-    { id: "smoky", label: "Smoky Layered", category: "Mountain Reserve" },
-    { id: "citrus", label: "Citrus Crisp", category: "Collector Reserve" },
-    { id: "umami", label: "Umami Savory", category: "Imperial Grade" },
-    { id: "sweet", label: "Sweet Delicate", category: "Collector Reserve" },
+    { id: "floral",   label: "Floral Focus",    category: "Floral Reserve" },
+    { id: "malty",    label: "Malty Warmth",     category: "Estate Collection" },
+    { id: "smoky",    label: "Smoky Layered",    category: "Signature Blends" },
+    { id: "citrus",   label: "Citrus Crisp",     category: "Signature Blends" },
+    { id: "wellness", label: "Wellness Ritual",  category: "Wellness Reserve" },
+    { id: "rare",     label: "Rare & Exquisite", category: "Grand Reserve" },
   ];
 
   // Pick recommendation based on answers
   const getRecommendation = (): TeaProduct | null => {
     if (!selectedMood && !selectedTaste) return null;
 
-    let targetCategory: string = "Assam Heritage";
+    let targetCategory: string = "Estate Collection";
 
     if (selectedTaste) {
       const match = tastes.find((t) => t.id === selectedTaste);
       if (match) targetCategory = match.category;
     } else if (selectedMood) {
-      if (selectedMood === "focus") targetCategory = "Imperial Grade";
-      else if (selectedMood === "reflection") targetCategory = "Mountain Reserve";
-      else if (selectedMood === "social") targetCategory = "Floral Reserve";
-      else targetCategory = "Assam Heritage";
+      if (selectedMood === "focus")      targetCategory = "Estate Collection";
+      else if (selectedMood === "reflection") targetCategory = "Grand Reserve";
+      else if (selectedMood === "social")     targetCategory = "Signature Blends";
+      else                                    targetCategory = "Wellness Reserve";
     }
 
     return products.find((p) => p.category === targetCategory) || products[0];

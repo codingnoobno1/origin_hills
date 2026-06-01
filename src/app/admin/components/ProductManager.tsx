@@ -29,7 +29,13 @@ const EMPTY_FORM = {
   aromatic: "5", mineral: "5", floral: "5", roasted: "5", umami: "5",
 };
 
-const CATEGORIES = ["Assam Heritage", "Floral Reserve", "Mountain Reserve", "Imperial Grade", "Collector Reserve", "White", "Green", "Black", "Oolong"];
+const CATEGORIES = [
+  "Estate Collection",
+  "Signature Blends",
+  "Wellness Reserve",
+  "Floral Reserve",
+  "Grand Reserve",
+];
 
 interface ProductManagerProps {
   onToast: (msg: string) => void;
