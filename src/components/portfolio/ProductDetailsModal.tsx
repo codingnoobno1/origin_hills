@@ -155,7 +155,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 Cellar Price
               </span>
               <span className="text-lg font-sans font-bold tracking-widest text-forest">
-                ${product.price.toFixed(2)}{" "}
+                ₹{product.price.toFixed(2)}{" "}
                 <span className="text-[11px] font-normal text-forest/40">/ 50g tin</span>
               </span>
             </div>

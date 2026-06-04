@@ -31,7 +31,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onToast 
   if (!data) return null;
 
   const stats = [
-    { label: "Total Revenue", value: `$${data.totalRevenue?.toFixed(2) || "0.00"}`, icon: <TrendingUp className="w-5 h-5 text-gold" />, sub: "All time" },
+    { label: "Total Revenue", value: `₹${data.totalRevenue?.toFixed(2) || "0.00"}`, icon: <TrendingUp className="w-5 h-5 text-gold" />, sub: "All time" },
     { label: "Total Orders", value: data.totalOrders, icon: <ShoppingBag className="w-5 h-5 text-gold" />, sub: `${data.pendingOrders} pending` },
     { label: "Collectors", value: data.totalCollectors, icon: <Users className="w-5 h-5 text-gold" />, sub: "Registered users" },
     { label: "Products", value: data.totalProducts, icon: <Package className="w-5 h-5 text-gold" />, sub: "Active catalogue" },
@@ -94,7 +94,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ onToast 
               <div key={i} className="py-2.5 flex items-center justify-between text-xs font-sans">
                 <span className="text-forest/70">{o.userEmail}</span>
                 <div className="flex items-center gap-3">
-                  <span className="font-bold text-forest">${o.total?.toFixed(2)}</span>
+                  <span className="font-bold text-forest">₹{o.total?.toFixed(2)}</span>
                   <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${
                     o.status === "Confirmed" ? "bg-green-500/10 text-green-700 border-green-500/25" :
                     "bg-amber-500/10 text-amber-700 border-amber-500/25"

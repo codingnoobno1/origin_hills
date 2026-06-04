@@ -89,7 +89,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
           <div className="flex flex-col">
             <span className="text-[9px] font-sans uppercase tracking-widest text-forest/40">From</span>
             <span className="font-sans font-semibold text-forest text-sm tracking-wider">
-              ${product.price.toFixed(2)}
+              ₹{product.price.toFixed(2)}
               <span className="text-[9px] font-normal text-forest/35 ml-1">/ 50g</span>
             </span>
           </div>

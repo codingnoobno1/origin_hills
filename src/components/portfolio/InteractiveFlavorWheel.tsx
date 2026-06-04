@@ -178,7 +178,7 @@ export const InteractiveFlavorWheel: React.FC<InteractiveFlavorWheelProps> = ({
                 <div className="mt-6 pt-4 border-t border-gold/10 flex flex-col gap-2">
                   <div className="flex justify-between items-center text-xs font-sans tracking-wide mb-2">
                     <span className="text-forest/60">Registry Allocation Price</span>
-                    <span className="font-bold text-forest">${recommendedTea.price.toFixed(2)}</span>
+                    <span className="font-bold text-forest">₹{recommendedTea.price.toFixed(2)}</span>
                   </div>
 
                   <div className="flex gap-2">

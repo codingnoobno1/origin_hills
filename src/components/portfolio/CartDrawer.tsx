@@ -123,7 +123,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
 
                     <span className="text-xs font-sans font-bold text-forest tracking-wider">
-                      ${(item.product.price * item.quantity).toFixed(2)}
+                      ₹{(item.product.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -137,7 +137,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           <div className="p-6 border-t border-gold/15 bg-ivory-light flex flex-col gap-4">
             <div className="flex justify-between items-center text-xs font-sans tracking-wide">
               <span className="text-forest/60">Estimated Allocation Subtotal</span>
-              <span className="font-bold text-forest text-sm tracking-widest">${subtotal.toFixed(2)}</span>
+              <span className="font-bold text-forest text-sm tracking-widest">₹{subtotal.toFixed(2)}</span>
             </div>
 
             <div className="flex items-start gap-2.5 p-3 bg-forest/5 border border-gold/10 text-[10px] font-sans leading-relaxed text-forest/70">

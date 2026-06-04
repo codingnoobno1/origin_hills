@@ -76,7 +76,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({ onToast }) => {
                     <p className="text-[10px] text-forest/45 mt-0.5">{new Date(o.createdAt).toLocaleDateString()} · {o.items?.length || 0} item(s)</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="font-bold text-forest text-sm">${o.total?.toFixed(2)}</span>
+                    <span className="font-bold text-forest text-sm">₹{o.total?.toFixed(2)}</span>
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${statusColor(o.status)}`}>
                       {o.status}
                     </span>
@@ -109,7 +109,7 @@ export const OrderManager: React.FC<OrderManagerProps> = ({ onToast }) => {
                   {(o.items || []).map((item, i) => (
                     <div key={i} className="flex items-center justify-between text-xs font-sans text-forest/80 pb-1.5 border-b border-gold/10 last:border-0">
                       <span>{item.name} × {item.qty}</span>
-                      <span className="font-bold">${(item.price * item.qty).toFixed(2)}</span>
+                      <span className="font-bold">₹{(item.price * item.qty).toFixed(2)}</span>
                     </div>
                   ))}
                   {o.note && <p className="text-[11px] text-forest/50 font-sans italic mt-1">Note: {o.note}</p>}

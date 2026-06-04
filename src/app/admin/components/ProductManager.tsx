@@ -303,7 +303,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
                 <Field label="Tag / Badge">
                   <input value={form.tag} onChange={(e) => setForm((f) => ({ ...f, tag: e.target.value }))} className={inputCls} placeholder="Rare Reserve" />
                 </Field>
-                <Field label="Price (USD) *" required>
+                <Field label="Price (₹ INR) *" required>
                   <input required type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} className={inputCls} placeholder="48.00" />
                 </Field>
                 <Field label="Stock (tins)">
@@ -421,7 +421,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
                 <div className="p-3 flex flex-col gap-1.5 flex-1">
                   <p className="font-serif font-bold text-forest text-xs leading-tight line-clamp-2">{p.name}</p>
                   <p className="text-[9px] text-forest/45 uppercase tracking-wider">{p.category}</p>
-                  <p className="font-bold text-forest text-sm mt-auto">${p.price?.toFixed(2)}</p>
+                  <p className="font-bold text-forest text-sm mt-auto">₹{p.price?.toFixed(2)}</p>
                 </div>
                 {/* Actions */}
                 <div className="flex border-t border-gold/10">
@@ -466,7 +466,7 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
                         </div>
                       </td>
                       <td className="py-3 px-4"><span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-gold/10 text-gold-dark border border-gold/15">{p.category}</span></td>
-                      <td className="py-3 px-4 text-right font-bold text-forest">${p.price?.toFixed(2)}</td>
+                      <td className="py-3 px-4 text-right font-bold text-forest">₹{p.price?.toFixed(2)}</td>
                       <td className="py-3 px-4 text-center text-forest/70">{p.stock ?? "—"}</td>
                       <td className="py-3 px-4 text-center">
                         <button onClick={() => handleToggle(p)} className="cursor-pointer">
