@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Trash2, ShieldCheck, ShoppingBag } from "lucide-react";
+import { X, Trash2, ShieldCheck, ShoppingBag, Loader2, Lock } from "lucide-react";
 import { TeaProduct } from "./ProductCard";
 import { Button } from "./ui-elements";
 
@@ -15,6 +15,7 @@ interface CartDrawerProps {
   onRemoveItem: (id: string) => void;
   onUpdateQuantity: (id: string, qty: number) => void;
   onCheckout: () => void;
+  isProcessing?: boolean;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -24,6 +25,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onRemoveItem,
   onUpdateQuantity,
   onCheckout,
+  isProcessing = false,
 }) => {
   if (!isOpen) return null;
 
@@ -150,14 +152,26 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             <Button
               onClick={onCheckout}
               variant="secondary"
+              disabled={isProcessing}
               className="w-full font-bold uppercase py-4 tracking-[0.15em]"
             >
-              Submit Allocation Request
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing Payment…
+                </>
+              ) : (
+                <>
+                  <Lock className="w-3.5 h-3.5" />
+                  Pay ₹{subtotal.toFixed(2)} with Razorpay
+                </>
+              )}
             </Button>
 
             <button
               onClick={onClose}
-              className="text-[10px] font-sans font-semibold uppercase tracking-wider text-forest/50 hover:text-forest text-center transition-colors cursor-pointer"
+              disabled={isProcessing}
+              className="text-[10px] font-sans font-semibold uppercase tracking-wider text-forest/50 hover:text-forest text-center transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Continue Cellar Browsing
             </button>

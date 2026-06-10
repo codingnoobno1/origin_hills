@@ -29,6 +29,7 @@ export default function Home() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<TeaProduct | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Fetch products from API — normalise _id → id
   useEffect(() => {
@@ -92,21 +93,102 @@ export default function Home() {
   };
 
   const handleCheckout = async () => {
-    if (cartItems.length === 0) return;
+    if (cartItems.length === 0 || isProcessingPayment) return;
+
+    const items = cartItems.map((i) => ({
+      productId: i.product.id,
+      name: i.product.name,
+      qty: i.quantity,
+      price: i.product.price,
+    }));
+    const total = cartItems.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
+
+    setIsProcessingPayment(true);
+
     try {
-      await fetch("/api/orders", {
+      const orderRes = await fetch("/api/payment/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userEmail: userEmail || "guest",
-          items: cartItems.map((i) => ({ productId: i.product.id, name: i.product.name, qty: i.quantity, price: i.product.price })),
-          total: cartItems.reduce((acc, i) => acc + i.product.price * i.quantity, 0),
+          amount: total,
+          receipt: `oh_${Date.now()}`,
+          notes: { userEmail: userEmail || "guest" },
         }),
       });
-    } catch (_) {}
-    setToastMessage("Private allocation request sent! Our tea concierge will review your registry allocations.");
-    setCartItems([]);
-    setIsCartOpen(false);
+      const orderData = await orderRes.json();
+      if (!orderRes.ok || !orderData.order) {
+        throw new Error(orderData.error || "Could not initiate payment");
+      }
+
+      // Sandbox mode or Razorpay script unavailable — confirm allocation directly
+      if (orderData.isSandbox || typeof window === "undefined" || typeof window.Razorpay === "undefined") {
+        await fetch("/api/payment/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userEmail: userEmail || "guest",
+            items,
+            total,
+            razorpay_order_id: orderData.order.id,
+          }),
+        });
+        setToastMessage("Private allocation request sent! Our tea concierge will review your registry allocations.");
+        setCartItems([]);
+        setIsCartOpen(false);
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      const rzp = new window.Razorpay({
+        key: orderData.keyId,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "Origin Hills",
+        description: "Estate Tea Reserve Allocation",
+        order_id: orderData.order.id,
+        prefill: { email: userEmail || "" },
+        theme: { color: "#0D1F16" },
+        handler: async (response) => {
+          try {
+            await fetch("/api/payment/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                userEmail: userEmail || "guest",
+                items,
+                total,
+              }),
+            });
+            setToastMessage("Payment confirmed! Your estate allocation is secured.");
+            setCartItems([]);
+            setIsCartOpen(false);
+          } catch {
+            setToastMessage("Payment received, but confirmation failed. Our concierge will follow up.");
+          } finally {
+            setIsProcessingPayment(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessingPayment(false);
+            setToastMessage("Payment cancelled. Your reserve cart is still saved.");
+          },
+        },
+      });
+
+      rzp.on("payment.failed", () => {
+        setIsProcessingPayment(false);
+        setToastMessage("Payment failed. Please try again or use a different method.");
+      });
+
+      rzp.open();
+    } catch (e: any) {
+      setIsProcessingPayment(false);
+      setToastMessage(e.message || "Could not start payment. Please try again.");
+    }
   };
 
   const scrollExplore = () => {
@@ -161,6 +243,7 @@ export default function Home() {
         onRemoveItem={handleRemoveCartItem}
         onUpdateQuantity={handleUpdateCartQuantity}
         onCheckout={handleCheckout}
+        isProcessing={isProcessingPayment}
       />
       <ProductDetailsModal
         product={selectedProduct}
