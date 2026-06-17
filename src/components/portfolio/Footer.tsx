@@ -1,7 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Coffee, Shield, Sparkles, Heart } from "lucide-react";
+import { PolicyModal, PolicyTab } from "./PolicyModal";
 
 export const Footer: React.FC = () => {
+  const [isPolicyOpen, setIsPolicyOpen] = useState(false);
+  const [activePolicyTab, setActivePolicyTab] = useState<PolicyTab>("about");
+
+  const openPolicy = (tab: PolicyTab) => {
+    setActivePolicyTab(tab);
+    setIsPolicyOpen(true);
+  };
   return (
     <footer className="bg-forest text-ivory border-t border-gold/15 pt-12 md:pt-20 pb-10 px-6 md:px-12 relative overflow-hidden">
       {/* Abstract map outline grid styling */}
@@ -64,10 +72,10 @@ export const Footer: React.FC = () => {
               Connoisseur Registry
             </h4>
             <div className="flex flex-col gap-2 text-xs font-sans text-ivory/60">
-              <span className="hover:text-gold cursor-pointer transition-colors duration-300">Request Allocations</span>
-              <span className="hover:text-gold cursor-pointer transition-colors duration-300">Terms of Allocation</span>
-              <span className="hover:text-gold cursor-pointer transition-colors duration-300">Private Cellar Access</span>
-              <span className="hover:text-gold cursor-pointer transition-colors duration-300">Cellar Lot Verification</span>
+              <span onClick={() => openPolicy("about")} className="hover:text-gold cursor-pointer transition-colors duration-300">About Us</span>
+              <span onClick={() => openPolicy("contact")} className="hover:text-gold cursor-pointer transition-colors duration-300">Contact Us</span>
+              <span onClick={() => openPolicy("shipping")} className="hover:text-gold cursor-pointer transition-colors duration-300">Shipping Policy</span>
+              <span onClick={() => openPolicy("refunds")} className="hover:text-gold cursor-pointer transition-colors duration-300">Return & Refund Policy</span>
             </div>
           </div>
 
@@ -80,7 +88,7 @@ export const Footer: React.FC = () => {
               Origin Hills Tea House<br />
               Assam • India<br />
               Exports • UAE • Global<br />
-              <span className="text-gold mt-2 block font-semibold">concierge@originhills.com</span>
+              <span className="text-gold mt-2 block font-semibold">assam@originhills.com</span>
             </address>
           </div>
 
@@ -90,13 +98,20 @@ export const Footer: React.FC = () => {
         <div className="border-t border-ivory/10 pt-8 flex flex-col sm:flex-row items-center justify-between text-[9px] font-sans text-ivory/45 tracking-widest uppercase">
           <span>© 2026 ORIGIN HILLS PREMIUM LMT. ALL RIGHTS RESERVED.</span>
           <div className="flex gap-6 mt-4 sm:mt-0 font-semibold">
-            <span className="hover:text-gold cursor-pointer transition-colors">Privacy Charter</span>
-            <span className="hover:text-gold cursor-pointer transition-colors">Terms of Steeping</span>
-            <span className="hover:text-gold cursor-pointer transition-colors">Collector Allocations</span>
+            <span onClick={() => openPolicy("privacy")} className="hover:text-gold cursor-pointer transition-colors">Privacy Policy</span>
+            <span onClick={() => openPolicy("terms")} className="hover:text-gold cursor-pointer transition-colors">Terms & Conditions</span>
+            <span onClick={() => openPolicy("about")} className="hover:text-gold cursor-pointer transition-colors">About Us</span>
           </div>
         </div>
 
       </div>
+
+      <PolicyModal
+        isOpen={isPolicyOpen}
+        onClose={() => setIsPolicyOpen(false)}
+        activeTab={activePolicyTab}
+        setActiveTab={setActivePolicyTab}
+      />
     </footer>
   );
 };
