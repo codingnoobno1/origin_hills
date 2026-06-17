@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/portfolio/Header";
 import { Hero } from "@/components/portfolio/Hero";
 import { Heritage } from "@/components/portfolio/Heritage";
@@ -20,6 +21,7 @@ import { Footer } from "@/components/portfolio/Footer";
 import { TeaProduct } from "@/components/portfolio/ProductCard";
 
 export default function Home() {
+  const router = useRouter();
   const [products, setProducts] = useState<TeaProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
 
@@ -53,6 +55,27 @@ export default function Home() {
     const saved = localStorage.getItem("origin_hills_user");
     if (saved) setUserEmail(saved);
   }, []);
+
+  // Restore cart from localStorage
+  useEffect(() => {
+    const savedCart = localStorage.getItem("origin_hills_cart");
+    if (savedCart) {
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (e) {
+        console.error("Failed to parse cart items", e);
+      }
+    }
+  }, []);
+
+  // Save cart to localStorage
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem("origin_hills_cart", JSON.stringify(cartItems));
+    } else {
+      localStorage.removeItem("origin_hills_cart");
+    }
+  }, [cartItems]);
 
   const handleLoginSuccess = (email: string) => {
     setUserEmail(email);
@@ -92,103 +115,10 @@ export default function Home() {
     setCartItems((prev) => prev.map((i) => i.product.id === id ? { ...i, quantity: qty } : i));
   };
 
-  const handleCheckout = async () => {
-    if (cartItems.length === 0 || isProcessingPayment) return;
-
-    const items = cartItems.map((i) => ({
-      productId: i.product.id,
-      name: i.product.name,
-      qty: i.quantity,
-      price: i.product.price,
-    }));
-    const total = cartItems.reduce((acc, i) => acc + i.product.price * i.quantity, 0);
-
-    setIsProcessingPayment(true);
-
-    try {
-      const orderRes = await fetch("/api/payment/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: total,
-          receipt: `oh_${Date.now()}`,
-          notes: { userEmail: userEmail || "guest" },
-        }),
-      });
-      const orderData = await orderRes.json();
-      if (!orderRes.ok || !orderData.order) {
-        throw new Error(orderData.error || "Could not initiate payment");
-      }
-
-      // Sandbox mode or Razorpay script unavailable — confirm allocation directly
-      if (orderData.isSandbox || typeof window === "undefined" || typeof window.Razorpay === "undefined") {
-        await fetch("/api/payment/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userEmail: userEmail || "guest",
-            items,
-            total,
-            razorpay_order_id: orderData.order.id,
-          }),
-        });
-        setToastMessage("Private allocation request sent! Our tea concierge will review your registry allocations.");
-        setCartItems([]);
-        setIsCartOpen(false);
-        setIsProcessingPayment(false);
-        return;
-      }
-
-      const rzp = new window.Razorpay({
-        key: orderData.keyId,
-        amount: orderData.order.amount,
-        currency: orderData.order.currency,
-        name: "Origin Hills",
-        description: "Estate Tea Reserve Allocation",
-        order_id: orderData.order.id,
-        prefill: { email: userEmail || "" },
-        theme: { color: "#0D1F16" },
-        handler: async (response) => {
-          try {
-            await fetch("/api/payment/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                userEmail: userEmail || "guest",
-                items,
-                total,
-              }),
-            });
-            setToastMessage("Payment confirmed! Your estate allocation is secured.");
-            setCartItems([]);
-            setIsCartOpen(false);
-          } catch {
-            setToastMessage("Payment received, but confirmation failed. Our concierge will follow up.");
-          } finally {
-            setIsProcessingPayment(false);
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            setIsProcessingPayment(false);
-            setToastMessage("Payment cancelled. Your reserve cart is still saved.");
-          },
-        },
-      });
-
-      rzp.on("payment.failed", () => {
-        setIsProcessingPayment(false);
-        setToastMessage("Payment failed. Please try again or use a different method.");
-      });
-
-      rzp.open();
-    } catch (e: any) {
-      setIsProcessingPayment(false);
-      setToastMessage(e.message || "Could not start payment. Please try again.");
-    }
+  const handleCheckout = () => {
+    if (cartItems.length === 0) return;
+    setIsCartOpen(false);
+    router.push("/checkout");
   };
 
   const scrollExplore = () => {

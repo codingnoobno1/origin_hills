@@ -14,6 +14,7 @@ export async function POST(request: Request) {
       items,
       total,
       note,
+      customerInfo,
     } = body;
 
     if (!items || total === undefined) {
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     }
 
     const order = {
-      userEmail: userEmail || "guest",
+      userEmail: userEmail || customerInfo?.email || "guest",
       items,
       total: Number(total),
       note,
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
       paymentId: razorpay_payment_id || null,
       razorpayOrderId: razorpay_order_id || null,
       createdAt: new Date().toISOString(),
+      customerInfo: customerInfo || null,
     };
 
     if (isSandboxMode()) {
