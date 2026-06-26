@@ -26,6 +26,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProduct, onAddToCart }) => {
   const [hovered, setHovered] = useState(false);
+  const isSoldOut = typeof product.stock === "number" && product.stock <= 0;
 
   return (
     <article
@@ -46,9 +47,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
         {/* Gradient veil */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f16]/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
+        {/* Sold Out overlay */}
+        {isSoldOut && (
+          <div className="absolute inset-0 bg-forest/60 backdrop-blur-[2px] flex items-center justify-center pointer-events-none z-10">
+            <span className="text-[10px] font-sans font-bold uppercase tracking-[0.25em] text-ivory border border-ivory/50 px-4 py-2 bg-forest/70">
+              Sold Out
+            </span>
+          </div>
+        )}
+
         {/* Tag badge */}
         {product.tag && (
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-4 left-4 z-20">
             <span className="text-[9px] font-sans font-semibold uppercase tracking-[0.18em] text-ivory bg-[#0d1f16]/70 backdrop-blur-sm px-2.5 py-1 border border-ivory/15">
               {product.tag}
             </span>
@@ -56,14 +66,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
         )}
 
         {/* Hover reveal — Discover */}
-        <div className={`absolute inset-x-0 bottom-0 flex items-center justify-center pb-6 transition-all duration-500 ${hovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <button
-            onClick={(e) => { e.stopPropagation(); onSelectProduct(product); }}
-            className="text-[10px] font-sans font-semibold uppercase tracking-[0.22em] text-ivory border border-ivory/50 px-5 py-2.5 hover:bg-ivory hover:text-forest transition-all duration-300 cursor-pointer min-h-[40px] backdrop-blur-sm"
-          >
-            Discover
-          </button>
-        </div>
+        {!isSoldOut && (
+          <div className={`absolute inset-x-0 bottom-0 flex items-center justify-center pb-6 transition-all duration-500 ${hovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+            <button
+              onClick={(e) => { e.stopPropagation(); onSelectProduct(product); }}
+              className="text-[10px] font-sans font-semibold uppercase tracking-[0.22em] text-ivory border border-ivory/50 px-5 py-2.5 hover:bg-ivory hover:text-forest transition-all duration-300 cursor-pointer min-h-[40px] backdrop-blur-sm"
+            >
+              Discover
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Meta */}
@@ -93,12 +105,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelectProdu
               <span className="text-[9px] font-normal text-forest/35 ml-1">/ 50g</span>
             </span>
           </div>
-          <button
-            onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-            className="text-[9px] font-sans font-bold uppercase tracking-[0.18em] text-forest/60 hover:text-gold transition-colors duration-300 py-2 px-3 border border-transparent hover:border-gold/25 cursor-pointer min-h-[36px]"
-          >
-            Reserve
-          </button>
+          {isSoldOut ? (
+            <span className="text-[9px] font-sans font-bold uppercase tracking-[0.18em] text-red-500/70 py-2 px-3 border border-red-300/30 bg-red-50/50">
+              Sold Out
+            </span>
+          ) : (
+            <button
+              onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+              className="text-[9px] font-sans font-bold uppercase tracking-[0.18em] text-forest/60 hover:text-gold transition-colors duration-300 py-2 px-3 border border-transparent hover:border-gold/25 cursor-pointer min-h-[36px]"
+            >
+              Reserve
+            </button>
+          )}
         </div>
       </div>
     </article>

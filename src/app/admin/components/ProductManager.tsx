@@ -422,6 +422,16 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
                   <p className="font-serif font-bold text-forest text-xs leading-tight line-clamp-2">{p.name}</p>
                   <p className="text-[9px] text-forest/45 uppercase tracking-wider">{p.category}</p>
                   <p className="font-bold text-forest text-sm mt-auto">₹{p.price?.toFixed(2)}</p>
+                  {/* Stock status */}
+                  {typeof p.stock === "number" && p.stock <= 0 ? (
+                    <span className="text-[8px] font-sans font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200/60 px-1.5 py-0.5 w-fit">
+                      Sold Out
+                    </span>
+                  ) : typeof p.stock === "number" && p.stock <= 10 ? (
+                    <span className="text-[8px] font-sans font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 w-fit">
+                      Low • {p.stock} left
+                    </span>
+                  ) : null}
                 </div>
                 {/* Actions */}
                 <div className="flex border-t border-gold/10">
@@ -467,7 +477,19 @@ export const ProductManager: React.FC<ProductManagerProps> = ({ onToast }) => {
                       </td>
                       <td className="py-3 px-4"><span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-gold/10 text-gold-dark border border-gold/15">{p.category}</span></td>
                       <td className="py-3 px-4 text-right font-bold text-forest">₹{p.price?.toFixed(2)}</td>
-                      <td className="py-3 px-4 text-center text-forest/70">{p.stock ?? "—"}</td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="text-forest/70 font-mono">{p.stock ?? "—"}</span>
+                        {typeof p.stock === "number" && p.stock <= 0 && (
+                          <span className="ml-2 inline-flex items-center px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200/60">
+                            Sold Out
+                          </span>
+                        )}
+                        {typeof p.stock === "number" && p.stock > 0 && p.stock <= 10 && (
+                          <span className="ml-2 inline-flex items-center px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-200/60">
+                            Low
+                          </span>
+                        )}
+                      </td>
                       <td className="py-3 px-4 text-center">
                         <button onClick={() => handleToggle(p)} className="cursor-pointer">
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${p.active ? "bg-green-500/10 text-green-700 border-green-500/25" : "bg-red-500/10 text-red-700 border-red-500/25"}`}>

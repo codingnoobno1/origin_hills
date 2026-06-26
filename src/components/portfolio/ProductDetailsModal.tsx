@@ -17,6 +17,8 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
   onAddToCart,
 }) => {
   if (!isOpen || !product) return null;
+  const isSoldOut = typeof product.stock === "number" && product.stock <= 0;
+  const isLowStock = typeof product.stock === "number" && product.stock > 0 && product.stock <= 10;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
@@ -158,19 +160,35 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({
                 ₹{product.price.toFixed(2)}{" "}
                 <span className="text-[11px] font-normal text-forest/40">/ 50g tin</span>
               </span>
+              {isSoldOut && (
+                <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-red-600 mt-1">
+                  ✕ Out of Stock
+                </span>
+              )}
+              {isLowStock && (
+                <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-amber-600 mt-1">
+                  ⚠ Only {product.stock} left
+                </span>
+              )}
             </div>
-            <Button
-              onClick={() => {
-                onAddToCart(product);
-                onClose();
-              }}
-              variant="primary"
-              size="md"
-              className="flex items-center gap-2 shadow-sm font-semibold w-full sm:w-auto"
-            >
-              <ShoppingBag className="w-4 h-4 text-ivory" />
-              Add to Reserve
-            </Button>
+            {isSoldOut ? (
+              <div className="flex items-center gap-2 px-5 py-3 border border-red-300/40 bg-red-50/50 text-red-600 text-[11px] font-sans font-bold uppercase tracking-wider w-full sm:w-auto justify-center">
+                Sold Out
+              </div>
+            ) : (
+              <Button
+                onClick={() => {
+                  onAddToCart(product);
+                  onClose();
+                }}
+                variant="primary"
+                size="md"
+                className="flex items-center gap-2 shadow-sm font-semibold w-full sm:w-auto"
+              >
+                <ShoppingBag className="w-4 h-4 text-ivory" />
+                Add to Reserve
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -90,6 +90,11 @@ export default function Home() {
   };
 
   const handleAddToCart = (product: TeaProduct) => {
+    // Block sold-out products
+    if (typeof product.stock === "number" && product.stock <= 0) {
+      setToastMessage(`${product.name} is currently sold out.`);
+      return;
+    }
     setCartItems((prev) => {
       const existing = prev.find((i) => i.product.id === product.id);
       if (existing) {
