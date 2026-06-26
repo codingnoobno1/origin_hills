@@ -42,3 +42,7 @@ next-env.d.ts
 
 # ignored mobile flutter app
 /origin_hills/
+
+# SSH keys / credentials
+crew_manager
+crew_manager.pub
