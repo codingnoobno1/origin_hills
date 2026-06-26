@@ -9,9 +9,7 @@ import { BrandPhilosophy } from "@/components/portfolio/BrandPhilosophy";
 import { CollectionGrid } from "@/components/portfolio/CollectionGrid";
 import { SourcingMap } from "@/components/portfolio/SourcingMap";
 import { BrewingGuide } from "@/components/portfolio/BrewingGuide";
-import { TastingNotes } from "@/components/portfolio/TastingNotes";
-import { InteractiveFlavorWheel } from "@/components/portfolio/InteractiveFlavorWheel";
-import { ImageGallery } from "@/components/portfolio/ImageGallery";
+
 import { ConnoisseurRegistry } from "@/components/portfolio/ConnoisseurRegistry";
 import { AuthModal } from "@/components/portfolio/AuthModal";
 import { CartDrawer, CartItem } from "@/components/portfolio/CartDrawer";
@@ -155,16 +153,8 @@ export default function Home() {
           onAddToCart={handleAddToCart}
         />
 
-        <InteractiveFlavorWheel
-          products={products}
-          onSelectProduct={setSelectedProduct}
-          onAddToCart={handleAddToCart}
-        />
-
         <SourcingMap />
         <BrewingGuide />
-        <TastingNotes />
-        <ImageGallery />
         <ConnoisseurRegistry />
       </main>
 
